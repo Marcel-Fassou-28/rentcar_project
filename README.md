@@ -1,2 +1,4 @@
-# Dev_web-Ecommerce
-Ce repository est créé pour le projet de developpement web dans l'optique de la création d'un site web avec différentes technologie comme React, Laravel et du code native php 
+# DEV_ECOMMERCE WITH React + Tailwindcss + Laravel
+
+Ce projet s'inscrit dans le cadre de notre cours de developpement web, l'objectif est de concevoir
+une application web d'ecommerce pour la gestion des produits d'une entreprise sur internet
