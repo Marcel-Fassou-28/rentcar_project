@@ -1,4 +1,4 @@
-# SITE WEB de location de voiture WITH React + Tailwindcss + Laravel
+# RentCar WITH React + Tailwindcss + Laravel
 
 Ce projet a été réalisé dans le cadre de notre module de Développement Web.
 Il s'agit de Développer une plateforme web intuitive et sécurisée permettant aux clients de rechercher, 
