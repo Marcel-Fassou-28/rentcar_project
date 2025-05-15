@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Lock, UserPlus, ArrowRight } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
   // État pour le mot de passe et sa force
@@ -323,7 +324,7 @@ const Register = () => {
             initial="hidden"
             animate="visible"
           >
-            Déjà un compte ?{' '}<a href="#" className="text-orange-500 hover:underline">Connectez-vous</a>
+            Déjà un compte ?{' '}<Link to="/login" className="text-orange-500 hover:underline">Connectez-vous</Link>
           </motion.p>
         </div>
       </motion.div>
