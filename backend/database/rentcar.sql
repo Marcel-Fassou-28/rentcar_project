@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     email VARCHAR(250) NOT NULL UNIQUE,
     role ENUM('admin', 'client'),
     password VARCHAR(250) NOT NULL,
+    birthay DATE NOT NULL,
     adresse VARCHAR(250) NOT NULL,
     photo VARCHAR(250) NOT NULL,
     email_verified_at DATETIME DEFAULT NULL,

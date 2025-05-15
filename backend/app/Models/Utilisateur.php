@@ -23,6 +23,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property string|null $role
  * @property string $password
  * @property string $adresse
+ * @property string $birthday
  * @property string $photo
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $created_at
@@ -62,6 +63,7 @@ class Utilisateur extends Authenticatable
         'photo',
         'email_verified_at',
         'token',
+        'birthday',
     ];
 
     /**

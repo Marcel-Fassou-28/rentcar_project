@@ -1,4 +1,4 @@
-import FooterSection from "../home/FooterSection"
+import FooterSection from "../common/FooterSection"
 import HeroSection from "../home/HeroSection"
 import InciteSection from "../home/InciteSection"
 import PresentationSection from "../home/PresentationSection"
@@ -12,7 +12,6 @@ function Home() {
       <StatsSection />
       <PresentationSection />
       <InciteSection />
-      <FooterSection />
     </div>
   )
 }

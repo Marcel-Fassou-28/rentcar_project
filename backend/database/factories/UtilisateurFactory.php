@@ -15,6 +15,7 @@ class UtilisateurFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'role' => $this->faker->randomElement(['admin', 'client']),
             'password' => password_hash($this->faker->password, PASSWORD_BCRYPT),
+            'birthday' => $this->faker->date('Y-m-d', '-18 years'),
             'adresse' => $this->faker->address,
             'photo' => $this->faker->imageUrl(200, 200, 'people'),
             'email_verified_at' => $this->faker->optional()->dateTimeBetween('-1 year', 'now'),

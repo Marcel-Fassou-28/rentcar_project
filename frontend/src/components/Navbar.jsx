@@ -66,12 +66,12 @@ function Navbar() {
       </div>
 
       <div className='lg:hidden mr-4 flex justify-end flex-row gap-2'>
-        <button className="flex items-center justify-center px-1 h-8 py-2 border border-black rounded-md text-black hover:bg-orange-500 transition duration-200">
+        <Link to='/login' className="flex items-center justify-center px-1 h-8 py-2 border border-black rounded-md text-black hover:bg-orange-500 transition duration-200">
             <UserCircle className="mr-2 w-4" />
-          </button>
-          <button className="flex justify-center items-center px-1 py-2 h-8 border border-black rounded-md text-black hover:bg-orange-500 transition duration-200">
+          </Link>
+          <Link to='/register' className="flex justify-center items-center px-1 py-2 h-8 border border-black rounded-md text-black hover:bg-orange-500 transition duration-200">
             <UserPlus className="mr-2 w-4" />
-          </button>
+          </Link>
       </div>
        {/* Menu mobile déroulant */}
       {isOpen && (
