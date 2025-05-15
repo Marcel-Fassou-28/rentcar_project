@@ -1,0 +1,64 @@
+CREATE DATABASE IF NOT EXISTS rentcar;
+USE rentcar;
+
+CREATE TABLE IF NOT EXISTS utilisateurs (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(250) NOT NULL UNIQUE,
+    role ENUM('admin', 'client'),
+    password VARCHAR(250) NOT NULL,
+    adresse VARCHAR(250) NOT NULL,
+    photo VARCHAR(250) NOT NULL,
+    email_verified_at DATETIME DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    token VARCHAR(250) DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS administrateurs (
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    CONSTRAINT fk_admin_user FOREIGN KEY (id) REFERENCES utilisateurs(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS clients (
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    telephone VARCHAR(20) NOT NULL,
+    permisConduire VARCHAR(250) NULL,
+    CONSTRAINT fk_client_user FOREIGN KEY (id) REFERENCES utilisateurs(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS voitures (
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    car_name VARCHAR(100) NOT NULL,
+    car_model VARCHAR(100) NOT NULL,
+    car_categorie VARCHAR(100) NOT NULL,
+    immatriculation VARCHAR(100) NOT NULL UNIQUE,
+    statut ENUM('reservé', 'disponible', 'loué'),
+    car_photo VARCHAR(250) DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS reservations (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    dateDebut DATE NOT NULL,
+    dateFin DATE NOT NULL,
+    statut ENUM('payé', 'expiré', 'en cours', 'en attente') DEFAULT 'en cours',
+    montant_total DOUBLE(10, 2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    idClient BIGINT UNSIGNED NOT NULL,
+    idVoiture INT UNSIGNED NOT NULL,
+    CONSTRAINT fk_reservation_client FOREIGN KEY (idClient) REFERENCES clients(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_reservation_voiture FOREIGN KEY (idVoiture) REFERENCES voitures(id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS paiements (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    datePaiement DATETIME DEFAULT CURRENT_TIMESTAMP,
+    montant DOUBLE(10, 2) NOT NULL,
+    methode_paiement ENUM('carte') DEFAULT 'carte',
+    idReservation BIGINT UNSIGNED NOT NULL,
+    CONSTRAINT fk_paiement_client FOREIGN KEY (idReservation) REFERENCES reservations(id) ON UPDATE CASCADE
+);
