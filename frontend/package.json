@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "env": "^0.0.2",
+    "framer-motion": "^12.12.1",
+    "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.0",
     "tailwind-scrollbar-hide": "^2.0.0"
   },
   "devDependencies": {

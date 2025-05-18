@@ -4,7 +4,6 @@ import InciteSection from "../home/InciteSection"
 import PresentationSection from "../home/PresentationSection"
 import StatsSection from "../home/StatsSection"
 
-
 function Home() {
   return (
     <div className="overflow-x-hidden">
