@@ -81,7 +81,7 @@ function Navbar() {
             
           <div className='flex flex-col items-start justify-start pt-2 mb-2'>
             <Link to='/' className='flex gap-4 font-semibold w-full py-2 px-3'><Home size={20}/>Home</Link>
-            <a href="" className='flex gap-4 font-semibold w-full py-2 px-3'><CarFront size={20}/>Models</a>
+            <a href="/models" className='flex gap-4 font-semibold w-full py-2 px-3'><CarFront size={20}/>Models</a>
             <a href="" className='flex gap-4 font-semibold w-full py-2 px-3'><Contact size={20}/>Contact</a>
             <a href="" className='flex gap-4 font-semibold w-full py-2 px-3'><Info size={20}/>About</a>
           </div>

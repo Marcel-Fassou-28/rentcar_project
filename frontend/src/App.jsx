@@ -5,6 +5,7 @@ import Home from './components/pages/Home'
 import Login from './components/pages/Login'
 import Register from './components/pages/Register'
 import FooterSection from './components/common/FooterSection'
+import Interface from './components/pages/Models/interface'
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/models' element={<Interface />} />
     </Routes>
     </div>
     <div>
