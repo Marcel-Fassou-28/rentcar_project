@@ -7,6 +7,8 @@ import Register from './components/pages/Register'
 import FooterSection from './components/common/FooterSection'
 import Model from './components/pages/Model'
 import Contact from './components/pages/Contact'
+import Interface from './components/pages/Models/interface'
+
 import About from './components/pages/About'
 
 function App() {
@@ -22,6 +24,7 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/model-voiture' element={<Model />} />
         <Route path='/contact' element={<Contact />} />
+        <Route path='/models' element={<Interface />} />
         <Route path='/about' element={<About />} />
     </Routes>
     </div>
