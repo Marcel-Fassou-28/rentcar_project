@@ -7,6 +7,7 @@ import Register from './components/pages/Register'
 import FooterSection from './components/common/FooterSection'
 import Interface from './components/pages/Models/interface'
 
+import About from './components/pages/About'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/models' element={<Interface />} />
+        <Route path='/about' element={<About />} />
     </Routes>
     </div>
     <div>
