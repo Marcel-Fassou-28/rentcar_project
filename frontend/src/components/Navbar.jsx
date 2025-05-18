@@ -45,13 +45,13 @@ function Navbar() {
           <Link to='/' className='font-semibold'>Home</Link>
         </li>
         <li className='list-none'>
-            <a href="" className='font-semibold'>Models</a>
+            <Link to='/model-voiture' className='font-semibold'>Models</Link>
         </li>
         <li className='list-none'>
-            <a href="" className='font-semibold'>Contact</a>
+            <Link to='/contact' className='font-semibold'>Contact</Link>
         </li>
         <li className='list-none'>
-            <a href="" className='font-semibold'>About</a>
+            <Link to='about' className='font-semibold'>About</Link>
         </li>
       </div>
       <div className='flex-1 justify-end space-x-4 hidden lg:flex mr-4'>
