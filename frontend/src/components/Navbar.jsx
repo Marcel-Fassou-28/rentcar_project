@@ -45,7 +45,8 @@ function Navbar() {
           <Link to='/' className='font-semibold'>Home</Link>
         </li>
         <li className='list-none'>
-            <a href="" className='font-semibold'>Models</a>
+            <a href="/models" className='font-semibold'>Models</a>
+            {/* <Link to='/models' className='font-semibold'>Models</Link> */}
         </li>
         <li className='list-none'>
             <a href="" className='font-semibold'>Contact</a>
