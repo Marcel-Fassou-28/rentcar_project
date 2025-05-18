@@ -1,27 +1,43 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCar, faCarSide, faCarRear } from "@fortawesome/free-solid-svg-icons";
-//import { CarProfile } from "phosphor-react";
 import Model from "./model";
 
 import { Car, Jeep, CarSimple } from "@phosphor-icons/react";
 
 const Interface = () => {
-
-    
-
+  const voiture = [
+    {
+      lien: "https://diamondsblueauto.ma/upload/car/39.jpg",
+      prix: 600,
+      nom: "Mercedes Class A Berline Amg line",
+      carburant: "diesel",
+      transmission: "automatique",
+    },
+    {
+      lien: "https://media.istockphoto.com/id/1150931120/fr/photo/illustration-3d-de-la-voiture-compacte-blanche-g%C3%A9n%C3%A9rique-vue-de-face.jpg?s=612x612&w=is&k=20&c=JEV9-xxtDTN7Re7iNuuXNI_OqrRVAFe3JCrrxIRkN4w=",
+      prix: 700,
+      nom: " voiture SUV de luxe",
+      carburant: "carburant",
+      transmission: "automatique",
+    },
+    {
+      lien: "https://koto.ci/_ipx/q_90&s_600x360/https://api.koto.ci/wp-content/uploads/2024/07/Image-principale-NETA-AYA.png",
+      prix: 318,
+      nom: " NETA AYA",
+      carburant: "electrique",
+      transmission: "automatique",
+    },
+  ];
 
   return (
     <div className="pt-16">
       <div>
-        <div className=" flex flex-col justify-center gap-4 md:flex-row md:justify-between md:items-center px-16 text-white fo  bg-[url('https://ai.dimaster.io/assets/cache/1920/960/media/Artikel/231218%20Toyota%20FT-Se%20Concept/toyotaft-seext01.jpg')] bg-cover bg-center bg-no-repeat h-[300px]">
+        <div className=" flex flex-col justify-center gap-4 md:flex-row md:justify-between md:items-center px-16 text-white bg-[url('https://www.sixt.fr/magazine/wp-content/uploads//sites/3/2022/01/rolls-royce-la-rose-noire-droptail-1536x864.jpg')] bg-cover bg-center bg-no-repeat h-[300px]">
           <h1 className="text-2xl font-bold">NOS VEHICULES</h1>
           <div>
-            <a href="/">Accueil </a>
+            <a href="/">Accueil</a>
             <a href="/models">/ Voitures</a>
           </div>
         </div>
       </div>
-      
 
       <div className="flex  gap-16 flex-wrap p-4 justify-center items-center shadow-xl w-2/3 md:w-[770px] mx-auto px-8">
         <div className="flex flex-col  font-bold items-center gap-2 cursor-pointer hover:text-red-500  w-16">
@@ -52,15 +68,9 @@ const Interface = () => {
       </div>
 
       <div className="flex flex-wrap   pb-12 mx-4  lg:mx-64  md:gap-1">
-        <Model />
-        <Model />
-        <Model />
-        <Model />
-        <Model />
-        <Model />
-        <Model />
-        <Model />
-        <Model />
+        {voiture.map((voiture) => {
+          return <Model voiture={voiture} />;
+        })}
       </div>
     </div>
   );
