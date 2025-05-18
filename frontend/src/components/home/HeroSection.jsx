@@ -29,8 +29,8 @@ function HeroSection() {
                   </select>
               </div>
               <div className='flex flex-col gap-5'>
-                <input className='py-2 px-2 capitalize font-normal text-sm' type="date" placeholder='date debut de location' />
-                <input className='py-2 px-2 capitalize font-normal text-sm' type="date" placeholder='date fin de location' />
+                <input className='py-2 px-2 capitalize font-normal text-sm' type="datetime" placeholder='date debut de location' />
+                <input className='py-2 px-2 capitalize font-normal text-sm' type="datetime" placeholder='date fin de location' />
               </div>
               <button className='bg-orange-500 py-2 uppercase font-semibold rounded hover:bg-orange-600 transition duration-300' type='submit'>Chercher</button>
           </form>
