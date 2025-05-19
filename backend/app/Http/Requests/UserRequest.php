@@ -30,7 +30,12 @@ class UserRequest extends FormRequest
             'email'     => ['required', 'string', 'email', 'max:250', 'unique:utilisateurs,email'],
             'adresse'   => ['required', 'string', 'max:250'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
-            'telephone' => ['required', 'string', 'regex:/^0[0-9]\d{8}$/'],
+            'telephone' => [
+                'required',
+                'string',
+                'regex:/^(\+[0-9]{1,3}|0)[0-9]{9}$/',
+                'max:15',
+            ],
             'birthday'  => ['required', 'date', 'before:today'],
     ];
     }

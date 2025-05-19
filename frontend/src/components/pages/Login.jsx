@@ -29,7 +29,7 @@ function Login() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user',  JSON.stringify(data.user));
 
-        navigate('/models');
+        navigate('/login');
       } else {
         setError(data.message || 'Identifiants invalides');
       }
