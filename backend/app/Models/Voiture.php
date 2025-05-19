@@ -39,6 +39,7 @@ class Voiture extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'car_categorie' => 'string',
         'statut' => 'string', // ENUM('reservé', 'disponible', 'loué')
     ];
 

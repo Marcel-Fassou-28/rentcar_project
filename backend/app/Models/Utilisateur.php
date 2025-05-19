@@ -64,6 +64,7 @@ class Utilisateur extends Authenticatable
         'email_verified_at',
         'token',
         'birthday',
+        'telephone',
     ];
 
     /**
