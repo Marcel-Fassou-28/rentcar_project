@@ -17,26 +17,38 @@ import Dashboard from './components/pages/User/admin/dashboard'
 import Reservations from './components/pages/Reservations'
 import Profil from './components/pages/User/Profil'
 
+import DashboardClient from './components/pages/User/client/dashboard';
+import MesReservations from './components/pages/User/client/MesReservations';
+import ReserverVoiture from './components/pages/User/client/ReserverVoiture';
+import ProfilClient from './components/pages/User/client/ProfilClient';
+
 function App() {
 
   return (
     <>
     <Navbar />
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/models' element={<Interface />} />
-        <Route path='/about' element={<About />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/models' element={<Interface />} />
+            <Route path='/about' element={<About />} />
 
-        {/* Protected Route */}
-        <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
-        <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
-        
-        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} /> 
+            {/* Dashboard Admin */}
+            <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><DashboardClient/></ProtectedRoute>} />
+            <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
+            <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+
+            {/* Dashboard Client */}
+            <Route path='/client/dashboard' element={<ProtectedRoute><DashboardClient /></ProtectedRoute>} />
+            <Route path='/client/mes-reservations' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
+            <Route path='/client/reserver' element={<ProtectedRoute><ReserverVoiture /></ProtectedRoute>} />
+            <Route path='/client/mon-profil' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
+
+            <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
       </Routes>
+
     <FooterSection />
     </>
   )
