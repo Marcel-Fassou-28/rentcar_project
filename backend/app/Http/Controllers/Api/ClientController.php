@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Utilisateur;
 use App\Models\Client;
 use App\Http\Requests\UserRequest;
+use App\Models\Paiement;
+use App\Models\Reservation;
+use Carbon\Carbon;
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
@@ -150,7 +155,75 @@ class ClientController extends Controller
     /**
      * Show the specified ressource for the dashboard
      */
-    public function dashboard(string $id, string $name) {
-        
+    public function dashboard($id, $nom)
+    {
+        // Vérifier si le client existe et correspond au nom
+        $client = Utilisateur::where('id', $id)
+            ->where('nom', $nom)
+            ->where('role', 'client')
+            ->first();
+
+        if (!$client) {
+            return response()->json(['message' => 'Client introuvable.'], 404);
+        }
+
+        // ID du client (clé étrangère dans la table `reservations`)
+        $clientId = $client->id;
+
+        // Nombre total de réservations du client
+        $totalReservations = Reservation::where('idClient', $clientId)->count();
+
+        // Réservations par statut
+        $reservationsParStatut = Reservation::where('idClient', $clientId)
+            ->select('statut', DB::raw('COUNT(*) as total'))
+            ->groupBy('statut')
+            ->pluck('total', 'statut');
+
+        // Réservations par mois (12 derniers mois)
+        $reservationsParMois = Reservation::where('idClient', $clientId)
+            ->where('created_at', '>=', Carbon::now()->subMonths(12))
+            ->select(
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as mois'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy('mois')
+            ->orderBy('mois')
+            ->get();
+
+        // Total des paiements
+        $totalPaiements = Paiement::whereHas('reservation', function ($query) use ($clientId) {
+            $query->where('idClient', $clientId);
+        })->sum('montant');
+
+        // Paiements par mois (12 derniers mois)
+        $paiementsParMois = Paiement::whereHas('reservation', function ($query) use ($clientId) {
+                $query->where('idClient', $clientId);
+            })
+            ->where('datePaiement', '>=', Carbon::now()->subMonths(12))
+            ->select(
+                DB::raw('DATE_FORMAT(datePaiement, "%Y-%m") as mois'),
+                DB::raw('SUM(montant) as total')
+            )
+            ->groupBy('mois')
+            ->orderBy('mois')
+            ->get();
+
+        return response()->json([
+            'client' => [
+                'id' => $client->id,
+                'nom' => $client->nom,
+                'prenom' => $client->prenom,
+                'email' => $client->email,
+            ],
+            'reservations' => [
+                'total' => $totalReservations,
+                'par_statut' => $reservationsParStatut,
+                'par_mois' => $reservationsParMois,
+            ],
+            'paiements' => [
+                'total' => $totalPaiements,
+                'par_mois' => $paiementsParMois,
+            ]
+        ]);
     }
 }

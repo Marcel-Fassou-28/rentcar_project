@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -11,8 +11,8 @@ const ProtectedRoute = ({ children }) => {
   } catch (error) {
     console.error('Failed to parse user data:', error);
   }
-
   return isAuthenticated ? children : <Navigate to="/login" replace state={{ error: 'Please log in to access this page' }} />;
 };
 
 export default ProtectedRoute
+

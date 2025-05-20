@@ -20,6 +20,7 @@ class VoitureFactory extends Factory
             'car_name' => $this->faker->company, // ou word() si tu préfères un nom simple
             'car_model' => $this->faker->word,
             'car_categorie' => $this->faker->randomElement(['citadine', 'SUV', 'berline', '4x4', 'compact', 'luxe']),
+            'prix' => $this->faker->randomFloat(4, 200, 9999),
             'immatriculation' => strtoupper($this->faker->bothify('??-####-??')), // ex: AB-1234-CD
             'statut' => $this->faker->randomElement(['reservé', 'disponible', 'loué']),
             'created_at' => now(),

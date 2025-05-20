@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     password VARCHAR(250) NOT NULL,
     birthay DATE NOT NULL,
     adresse VARCHAR(250) NOT NULL,
-    telephone VARCHAR(12) NOT NULL,
+    telephone VARCHAR(15) NOT NULL,
     photo VARCHAR(250) NOT NULL,
     email_verified_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS administrateurs (
 
 CREATE TABLE IF NOT EXISTS clients (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    telephone VARCHAR(20) NOT NULL,
     permisConduire VARCHAR(250) NULL,
     CONSTRAINT fk_client_user FOREIGN KEY (id) REFERENCES utilisateurs(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -35,6 +34,7 @@ CREATE TABLE IF NOT EXISTS voitures (
     car_name VARCHAR(100) NOT NULL,
     car_model VARCHAR(100) NOT NULL,
     car_categorie ENUM('SUV', 'berline', 'citadine', 'luxe', 'compact', '4x4'),
+    prix DOUBLE(10, 2) NOT NULL,
     immatriculation VARCHAR(100) NOT NULL UNIQUE,
     statut ENUM('reservé', 'disponible', 'loué'),
     car_photo VARCHAR(250) DEFAULT NULL,
@@ -63,4 +63,14 @@ CREATE TABLE IF NOT EXISTS paiements (
     methode_paiement ENUM('carte') DEFAULT 'carte',
     idReservation BIGINT UNSIGNED NOT NULL,
     CONSTRAINT fk_paiement_client FOREIGN KEY (idReservation) REFERENCES reservations(id) ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS notes (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    note DOUBLE(2, 1) NOT NULL,
+    commentaire TEXT NOT NULL,
+    idClient BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notes_client FOREIGN KEY (idClient) REFERENCES clients(id) ON DELETE CASCADE
 );

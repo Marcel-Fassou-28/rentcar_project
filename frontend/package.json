@@ -28,11 +28,11 @@
     "lucide-react": "^0.511.0",
     "phosphor-react": "^1.4.1",
     "react": "^19.1.0",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.0",
     "recharts": "^2.15.3",
-    "react-countup": "^6.5.3",
     "tailwind-scrollbar-hide": "^2.0.0"
   },
   "devDependencies": {

@@ -3,47 +3,68 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\ReservationRequest;
+use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Afficher uniquement les réservations du client connecté
     public function index()
     {
-        //
+        $clientId = Auth::id(); // ou auth()->user()->id selon config
+        $reservations = Reservation::with(['voiture'])
+            ->where('idClient', $clientId)
+            ->get();
+
+        return response()->json($reservations);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // Créer une nouvelle réservation pour le client connecté
+    public function store(ReservationRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $validated['idClient'] = Auth::id(); // force l'association au client connecté
+
+        $reservation = Reservation::create($validated);
+        return response()->json($reservation, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Afficher une seule réservation si elle appartient au client connecté
+    public function show($id)
     {
-        //
+        $reservation = Reservation::with('voiture')->find($id);
+
+        if (!$reservation || $reservation->idClient !== Auth::id()) {
+            return response()->json(['message' => 'Réservation non trouvée ou accès interdit'], 404);
+        }
+
+        return response()->json($reservation);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Mise à jour si la réservation appartient au client
+    public function update(ReservationRequest $request, $id)
     {
-        //
+        $reservation = Reservation::find($id);
+
+        if (!$reservation || $reservation->idClient !== Auth::id()) {
+            return response()->json(['message' => 'Réservation non trouvée ou accès interdit'], 404);
+        }
+
+        $reservation->update($request->validated());
+        return response()->json($reservation);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Suppression si la réservation appartient au client
+    public function destroy($id)
     {
-        //
+        $reservation = Reservation::find($id);
+
+        if (!$reservation || $reservation->idClient !== Auth::id()) {
+            return response()->json(['message' => 'Réservation non trouvée ou accès interdit'], 404);
+        }
+
+        $reservation->delete();
+        return response()->json(['message' => 'Réservation supprimée avec succès']);
     }
 }

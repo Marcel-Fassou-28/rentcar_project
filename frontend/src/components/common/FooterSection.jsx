@@ -1,10 +1,10 @@
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
-import Logo from './../../assets/Logo.svg';
+import Logo from './../../assets/logo-white.svg';
 import { Link } from 'react-router-dom';
 
 function FooterSection() {
   return (
-    <footer className="relative bg-gray-900 text-white pt-12 pb-6">
+    <footer className="relative bg-gray-900 text-white pt-12 pb-6 bottom-0">
       <div className="container mx-auto px-4">
         {/* Top section with logo and info */}
         <div className="flex flex-col md:flex-row justify-between mb-10">
@@ -142,11 +142,11 @@ function FooterSection() {
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} RENT CAR. Tous droits réservés.</p>
-          <div className="mt-2 space-x-4">
+          {/*<div className="mt-2 space-x-4">
             <a href="#" className="hover:text-orange-500 transition duration-300">Mentions légales</a>
             <a href="#" className="hover:text-orange-500 transition duration-300">Politique de confidentialité</a>
             <a href="#" className="hover:text-orange-500 transition duration-300">CGV</a>
-          </div>
+          </div>*/}
         </div>
       </div>
     </footer>

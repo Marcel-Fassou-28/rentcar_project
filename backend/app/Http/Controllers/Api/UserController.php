@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\Note;
 use App\Models\Utilisateur;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -88,6 +89,29 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Logout failed'], 500);
         }
+    }
+ 
+    /**
+     * Pour afficher certaines statistiques à l'accueil
+     */
+    public function home()
+    {
+        $totalUtilisateurs = Utilisateur::count();
+        $totalNotes = Note::count();
+        $totalCommentaires = Note::whereNotNull('commentaire')
+            ->where('commentaire', '!=', '')
+            ->count();
+
+        $moyenneNotes = round(Note::avg('note') ?? 0, 1);
+
+        return response()->json([
+            'utilisateurs' => $totalUtilisateurs,
+            'notes' => [
+                'total' => $totalNotes,
+                'commentaires' => $totalCommentaires,
+                'moyenne' => $moyenneNotes,
+            ],
+        ], 200);
     }
 }
 
