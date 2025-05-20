@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserController extends Controller
 {
     /**
@@ -69,6 +70,26 @@ class UserController extends Controller
     public function all() {
 
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            // Revoke the current token
+            $request->user()->currentAccessToken()->delete();
+
+            // Optional: Revoke all tokens for the user
+            $request->user()->tokens()->delete();
+            return response()->json(['message' => 'Successfully logged out'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Logout failed'], 500);
+        }
+    }
 }
+
 
 

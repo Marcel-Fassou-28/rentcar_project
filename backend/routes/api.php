@@ -82,3 +82,5 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
     });
 
 });
+
+Route::middleware('auth:api')->post('/logout', [UserController::class, 'logout'])->name('api.logout');

@@ -1,11 +1,18 @@
-import { Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-function ProtectedRoute({ children }) {
+const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  const user = localStorage.getItem('user');
+
+  // Check if token and user exist and are valid
+  let isAuthenticated = false;
+  try {
+    isAuthenticated = token && user && JSON.parse(user)?.id;
+  } catch (error) {
+    console.error('Failed to parse user data:', error);
   }
-  return children;
+
+  return isAuthenticated ? children : <Navigate to="/login" replace state={{ error: 'Please log in to access this page' }} />;
 };
 
-export default ProtectedRoute;
+export default ProtectedRoute

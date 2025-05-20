@@ -5,19 +5,19 @@ import Home from './components/pages/Home'
 import Login from './components/pages/Login'
 import Register from './components/pages/Register'
 import FooterSection from './components/common/FooterSection'
-import Model from './components/pages/Model'
 import Contact from './components/pages/Contact'
 import Interface from './components/pages/Models/interface'
 
 import About from './components/pages/About'
+import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './components/pages/dashboard/dashboard'
+import Deconnexion from './components/pages/Deconnexion'
 
 function App() {
 
   return (
     <>
     <Navbar />
-    
-    <div className=''>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
@@ -25,11 +25,11 @@ function App() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/models' element={<Interface />} />
         <Route path='/about' element={<About />} />
-    </Routes>
-    </div>
-    <div>
-      <FooterSection />
-    </div>
+        <Route path='/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
+        
+      </Routes>
+    <FooterSection />
     </>
   )
 }

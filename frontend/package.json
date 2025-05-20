@@ -23,6 +23,7 @@
     "dotenv": "^16.5.0",
     "env": "^0.0.2",
     "framer-motion": "^12.12.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.511.0",
     "phosphor-react": "^1.4.1",
     "react": "^19.1.0",
