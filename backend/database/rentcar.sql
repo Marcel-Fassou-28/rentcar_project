@@ -11,10 +11,11 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     birthay DATE NOT NULL,
     adresse VARCHAR(250) NOT NULL,
     telephone VARCHAR(15) NOT NULL,
-    photo VARCHAR(250) NOT NULL,
+    photo VARCHAR(250) DEFAULT 'avatar.png',
     email_verified_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    remember_token VARCHAR(250) DEFAULT NULL,
     token VARCHAR(250) DEFAULT NULL
 );
 

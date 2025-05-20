@@ -1,18 +1,34 @@
 import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
   const user = localStorage.getItem('user');
 
-  // Check if token and user exist and are valid
   let isAuthenticated = false;
+  let userRole = null;
   try {
-    isAuthenticated = token && user && JSON.parse(user)?.id;
+    const parsedUser = user ? JSON.parse(user) : null;
+    isAuthenticated = token && parsedUser && parsedUser.id;
+    userRole = parsedUser?.role || null;
   } catch (error) {
-    console.error('Failed to parse user data:', error);
+    console.error('Erreur lors de l\'analyse des données utilisateur :', error);
   }
-  return isAuthenticated ? children : <Navigate to="/login" replace state={{ error: 'Please log in to access this page' }} />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ error: 'Veuillez vous connecter pour accéder à cette page' }} />;
+  }
+
+  // Si allowedRoles est spécifié, vérifier si le rôle de l'utilisateur est autorisé
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
+    return (
+      <Navigate
+        to="/"
+        replace
+        state={{ error: 'Vous n\'avez pas les autorisations nécessaires pour accéder à cette page' }}
+      />
+    );
+  }
+  return children;
 };
 
-export default ProtectedRoute
-
+export default ProtectedRoute;

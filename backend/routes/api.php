@@ -25,6 +25,12 @@ Route::post('/login', [UserController::class, 'login']);
 Route::get('/ressources', [UserController::class, 'home']); // Pour certaine information de l'accueil
 Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les models de voiture
 
+Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
+
+Route::get('/auth/google', [UserController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
+
 /*
 |------------------------------------------------------------------
 | Client seulement

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import axios from '../config/Axios';
 import { useState } from 'react';
 import { useAuth, slugify } from './../AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -37,6 +38,21 @@ function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const response = await axios.get('/auth/google/callback', {
+                headers: { Authorization: `Bearer ${credentialResponse.credential}` },
+            });
+            if (response.data.success) {
+                localStorage.setItem('token', response.data.token);
+                setSuccess(response.data.message);
+                setTimeout(() => navigate('/dashboard'), 2000);
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Erreur Google Auth.');
+        }
+    };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-orange-100 pt-16 md:pt-8 lg:pt-4">
       {/* Section Image */}
@@ -65,12 +81,12 @@ function Login() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <LogIn className="w-6 h-6" /> Connexion
           </h2>
-          {error && <p className="text-red-500 text-center font-semibold -mt-4 mb-2">{error}</p>}
-          {state?.message && <p className="text-green-500 text-center font-semibold -mt-4 mb-2">{state.message}</p>}
-          {state?.error && <p className="text-red-500 text-center font-semibold -mt-4 mb-2">{state.error}</p>}
+          {error && <p className="text-red-500 text-center font-semibold -pt-4 pb-1 transition-all">{error}</p>}
+          {state?.message && <p className="text-green-500 text-center font-semibold transition-all -pt-4 pb-1">{state.message}</p>}
+          {state?.error && <p className="text-red-500 text-center font-semibold transition-all -pt-4 pb-1">{state.error}</p>}
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -111,9 +127,9 @@ function Login() {
             </div>
 
             <div className="flex items-center justify-between">
-              <a href="#" className="text-sm text-orange-600 hover:underline">
+              <Link to='/forgot-password' className="text-sm text-orange-600 hover:underline">
                 Mot de passe oublié ?
-              </a>
+              </Link>
               <button
                 type="submit"
                 className="bg-orange-600 text-white px-6 py-2 rounded-md hover:bg-orange-700 transition flex items-center gap-2"
@@ -123,7 +139,7 @@ function Login() {
             </div>
           </form>
 
-          <div className="mt-6">
+          <div className="mt-3">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
@@ -133,8 +149,11 @@ function Login() {
               </div>
             </div>
 
-            <button className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 hover:bg-gray-50 transition">
-              <FcGoogle className="w-5 h-5" /> Se connecter avec Google
+            <button className="mt-1 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 hover:bg-gray-50 transition">
+              <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => setError('Échec de la connexion Google.')}
+                />
             </button>
           </div>
 

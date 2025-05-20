@@ -15,6 +15,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Deconnexion from './components/pages/Deconnexion'
 import Dashboard from './components/pages/User/admin/dashboard'
 import Reservations from './components/pages/Reservations'
+import ForgotPassword from './components/pages/ForgotPassword'
+import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
 
 function App() {
@@ -23,19 +25,29 @@ function App() {
     <>
     <Navbar />
       <Routes>
+        {/* Routes Public */}
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/models' element={<Interface />} />
         <Route path='/about' element={<About />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
 
-        {/* Protected Route */}
+        {/* Pour admin */}
         <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
         <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
-        
-        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} /> 
+
+        {/* Pour les clients */}
+
+
+        {/* Pour un utilisateur connecté */}
+        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
+        <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
+
+        {/* Routes communes */}
+
       </Routes>
     <FooterSection />
     </>
