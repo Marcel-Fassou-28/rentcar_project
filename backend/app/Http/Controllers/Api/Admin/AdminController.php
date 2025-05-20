@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ReservationController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -45,5 +45,12 @@ class ReservationController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Show the specified ressource for the dashboard
+     */
+    public function dashboard(string $id, string $name) {
+        
     }
 }

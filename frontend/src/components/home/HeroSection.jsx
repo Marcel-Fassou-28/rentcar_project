@@ -9,7 +9,7 @@ function HeroSection() {
       <motion.div 
       className="z-0 absolute inset-0  text-white font-bold bg-black/40 "
         initial={{ opacity: 0, x: -20}}
-        animate={{ opacity: 1, x: 0 }}
+        whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2}}
       >
         <div className='flex items-start justify-center flex-col h-full w-full lg:h-3/4 lg:transform lg:translate-y-28 lg:ml-10 bg-black/30 lg:shadow-md lg:shadow-black  p-5 md:w-1/2 transition-all duration-300 ease-in-out'>

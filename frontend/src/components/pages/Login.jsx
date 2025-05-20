@@ -3,8 +3,40 @@ import Albinberlin from './../../assets/Vehicule/albinberlin.jpg';
 import { FcGoogle } from 'react-icons/fc';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from '../config/Axios';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 function Login() {
+
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;          // ← on lit l’attribut name
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const { data } = await axios.post('/login', formData);
+      console.log(data);
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user',  JSON.stringify(data.user));
+
+        navigate('/login');
+      } else {
+        setError(data.message || 'Identifiants invalides');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors de la connexion');
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-orange-100 pt-16 md:pt-8 lg:pt-4">
       {/* Section Image */}
@@ -34,8 +66,8 @@ function Login() {
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <LogIn className="w-6 h-6" /> Connexion
           </h2>
-          
-          <form className="space-y-6">
+          {error && <p className="text-red-500 text-center font-semibold -mt-4 mb-2">{error}</p>}
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Adresse Email
@@ -45,8 +77,11 @@ function Login() {
                 <input
                   id="email"
                   type="email"
+                  name="email"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="votre adresse email"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -63,6 +98,9 @@ function Login() {
                   type="password"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Votre mot de passe"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                 />
               </div>

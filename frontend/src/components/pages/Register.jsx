@@ -2,10 +2,58 @@ import { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Lock, UserPlus, ArrowRight } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from '../config/Axios';
 
 const Register = () => {
-  // État pour le mot de passe et sa force
+   const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    email: '',
+    adresse: '',
+    password: '',
+    password_confirmation: '',
+    countryCode: '',
+    telephone: '',
+    birthday: '',
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'telephone') {
+      const cleanedValue = value.replace(/[^0-9]/g, '').slice(0, 9);
+      setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
+    } else if (name === 'countryCode') {
+      const cleanedValue = value.replace(/[^0-9+]/g, '').slice(0, 4);
+      setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const telephone = formData.countryCode && formData.telephone
+      ? `0${formData.telephone}`
+      : '';
+    const submitData = {
+      ...formData,
+      telephone,
+    };
+    try {
+      const response = await axios.post('/register', submitData);
+      if (response.data.success) {
+        alert('Inscription réussie ! Veuillez vous connecter.');
+        navigate('/login');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors de l’inscription');
+    }
+  };
+
   const [password, setPassword] = useState('');
   const [passwordStrength, setPasswordStrength] = useState({ level: '', score: 0 });
   const [passwordMatchError, setPasswordMatchError] = useState(false);
@@ -14,12 +62,12 @@ const Register = () => {
   // Fonction pour évaluer la force du mot de passe
   const evaluatePasswordStrength = (pwd) => {
     let score = 0;
-    if (pwd.length > 0) score += 10; // Base score pour non-vide
-    if (pwd.length >= 8) score += 20; // Longueur minimale
-    if (/[A-Z]/.test(pwd)) score += 20; // Majuscule
-    if (/[a-z]/.test(pwd)) score += 20; // Minuscule
-    if (/[0-9]/.test(pwd)) score += 20; // Chiffre
-    if (/[^A-Za-z0-9]/.test(pwd)) score += 20; // Caractère spécial
+    if (pwd.length > 0) score += 10;
+    if (pwd.length >= 8) score += 20;
+    if (/[A-Z]/.test(pwd)) score += 20;
+    if (/[a-z]/.test(pwd)) score += 20;
+    if (/[0-9]/.test(pwd)) score += 20;
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 20;
 
     if (score <= 30) return { level: 'Faible', score: 33, color: 'bg-red-500' };
     if (score <= 70) return { level: 'Moyen', score: 66, color: 'bg-orange-500' };
@@ -30,6 +78,7 @@ const Register = () => {
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setPasswordStrength(evaluatePasswordStrength(newPassword));
     if (confirmPassword) {
       setPasswordMatchError(newPassword !== confirmPassword);
@@ -41,6 +90,7 @@ const Register = () => {
     const newConfirmPassword = e.target.value;
     setConfirmPassword(newConfirmPassword);
     setPasswordMatchError(password !== newConfirmPassword);
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Animation variants pour les sections
@@ -105,8 +155,8 @@ const Register = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <UserPlus className="w-6 h-6" /> Créer un compte
           </h2>
-
-          <form className="space-y-4">
+          {error && <p className="text-red-500 text-center font-semibold -mt-4 mb-2">{error}</p>}
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Nom */}
             <motion.div variants={inputVariants} initial="hidden" animate="visible">
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -119,6 +169,9 @@ const Register = () => {
                   type="text"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Votre nom"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  name='nom'
                   required
                 />
               </div>
@@ -136,6 +189,9 @@ const Register = () => {
                   type="text"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Votre prénom"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  name='prenom'
                   required
                 />
               </div>
@@ -152,7 +208,10 @@ const Register = () => {
                   id="email"
                   type="email"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="votre adresse email.com"
+                  placeholder="votre adresse adresse email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  name='email'                  
                   required
                 />
               </div>
@@ -163,16 +222,27 @@ const Register = () => {
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                 Numéro de téléphone
               </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div className="flex space-x-2">
                 <input
-                  id="phone"
-                  type="tel"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="+33 6 12 34 56 78"
+                  type="text"
+                  name="countryCode"
+                  placeholder="+212"
+                  value={formData.countryCode}
+                  onChange={handleChange}
                   required
+                  className="w-1/4 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
-              </div>
+                  <input
+                    id="phone"
+                    type="tel"
+                    className="w-full pl-2 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    placeholder="Votre Numéro de Téléphone"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    name='telephone'                  
+                    required
+                  />
+                </div>
             </motion.div>
 
             {/* Adresse */}
@@ -187,6 +257,9 @@ const Register = () => {
                   type="text"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="123 Rue Exemple, Ville"
+                  value={formData.adresse}
+                  onChange={handleChange}
+                  name='adresse'                  
                   required
                 />
               </div>
@@ -202,6 +275,9 @@ const Register = () => {
                 <input
                   id="birthDate"
                   type="date"
+                  value={formData.birthday}
+                  onChange={handleChange}
+                  name='birthday'                  
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   required
                 />
@@ -219,6 +295,7 @@ const Register = () => {
                   id="password"
                   type="password"
                   value={password}
+                  name='password'
                   onChange={handlePasswordChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   placeholder="Entrer votre mot de passe"
@@ -260,6 +337,7 @@ const Register = () => {
                   id="confirmPassword"
                   type="password"
                   value={confirmPassword}
+                  name='password_confirmation'
                   onChange={handleConfirmPasswordChange}
                   className={`w-full pl-10 pr-4 py-2 border ${
                     passwordMatchError ? 'border-red-500' : 'border-gray-300'
