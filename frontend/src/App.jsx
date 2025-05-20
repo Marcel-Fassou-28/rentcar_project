@@ -19,6 +19,11 @@ import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
 
+import DashboardClient from './components/pages/User/client/dashboard';
+import MesReservations from './components/pages/User/client/MesReservations';
+import ReserverVoiture from './components/pages/User/client/ReserverVoiture';
+import ProfilClient from './components/pages/User/client/ProfilClient';
+
 function App() {
 
   return (
@@ -49,6 +54,7 @@ function App() {
         {/* Routes communes */}
 
       </Routes>
+
     <FooterSection />
     </>
   )
