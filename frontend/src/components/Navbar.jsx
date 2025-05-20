@@ -1,50 +1,65 @@
-import { UserPlus, UserCircle, Menu, X, Home, CarFront, Info, Contact, LogOut} from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Logo from './../assets/Logo.svg'
+import { UserPlus, UserCircle, Menu, X, Home, CarFront, Info, Contact, LogOut } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Logo from './../assets/Logo.svg';
 import { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { div } from 'framer-motion/client';
+
+// Fonction slugify
+const slugify = (str) => {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+};
 
 const Navbar = () => {
+  const { token, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Memoize user data to prevent redundant parsing
-  const { token, user, id, name } = useMemo(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    let parsedUser = null;
-    let id = null;
-    let name = '';
+  // Memoize id and slug
+  const { role, id, slug } = useMemo(() => {
+    if (!user) return { id: null, slug: '' };
+    const nom = user.nom || '';
+    const prenom = user.prenom || '';
+    const fullSlug = nom && prenom ? encodeURIComponent(`${slugify(nom)}-${slugify(prenom)}`) : '';
+    return {
+      role: user?.role || null,
+      id: user?.id || null,
+      slug: fullSlug,
+    };
+  }, [user]);
 
-    if (user) {
-      try {
-        parsedUser = JSON.parse(user);
-        id = parsedUser?.id;
-        name = parsedUser?.nom && parsedUser?.prenom ? `${parsedUser.nom}-${parsedUser.prenom}` : '';
-      } catch (error) {
-        console.error('Failed to parse user from localStorage:', error);
-      }
-    }
+  // Common menu items
+  const commonMenuItems = useMemo(
+    () => [
+      { to: '/models', label: 'Models', icon: <CarFront size={20} /> },
+    ],
+    []
+  );
 
-    return { token, user: parsedUser, id, name: encodeURIComponent(name) };
-  }, []);
-
-  // Common menu items for reusability
-  const commonMenuItems = [
-    { to: '/models', label: 'Models', icon: <CarFront size={20} /> },
-    { to: '/contact', label: 'Contact', icon: <Contact size={20} /> },
-  ];
-
-  // Menu items based on authentication status, with explicit order
-  const menuItems = token
-    ? [
-        { to: `/dashboard/${id}/${name}`, label: 'Dashboard', icon: <Home size={20} /> },
-        ...commonMenuItems,
-      ]
-    : [
-        { to: '/', label: 'Home', icon: <Home size={20} /> },
-        ...commonMenuItems,
-        { to: '/about', label: 'About', icon: <Info size={20} /> },
-      ];
+  // Menu items based on authentication status
+  const menuItems = useMemo(
+    () =>
+      token && id && slug && role
+        ? [{ to: `/${role}/dashboard/${id}/${slug}`, label: 'Dashboard', icon: <Home size={20} /> },
+           ...commonMenuItems, 
+           { to: `/${role}/reservation`, label: 'Reservation', icon: <CarFront size={20} /> },
+          { to: '/contact', label: 'Contact', icon: <Contact size={20} /> },]
+        : [
+            { to: '/', label: 'Home', icon: <Home size={20} /> },
+            ...commonMenuItems,
+            { to: '/about', label: 'About', icon: <Info size={20} /> },
+            { to: '/contact', label: 'Contact', icon: <Contact size={20} /> },
+          ],
+    [token, id, slug, commonMenuItems]
+  );
 
   return (
     <nav className="fixed w-full py-4 bg-white flex flex-row justify-between items-center shadow-sm h-16 z-10">
@@ -85,7 +100,7 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-6 lg:gap-10">
         {menuItems.map((item) => (
-          <Link key={item.to} to={item.to} className="font-semibold list-none">
+          <Link key={item.to} to={item.to} className="font-semibold">
             {item.label}
           </Link>
         ))}
@@ -94,13 +109,19 @@ const Navbar = () => {
       {/* Desktop Buttons */}
       <div className="flex-1 justify-end space-x-4 hidden lg:flex mr-4">
         {token ? (
+          <div className='flex flex-row gap-4'>
+          <Link to={`/my/profil/${id}/${slug}`}>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-8 h-8 text-center pt-0.5 font-bold text-lg">A</div>
+          </Link>
           <Link
             to="/deconnexion"
             className="flex items-center justify-center px-2 h-8 py-3 border border-black rounded-md text-black font-semibold hover:bg-orange-500 transition duration-200"
+            onClick={logout}
           >
             <LogOut className="mr-2 w-4" />
             Se Déconnecter
           </Link>
+            </div>
         ) : (
           <>
             <Link
