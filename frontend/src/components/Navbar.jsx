@@ -48,16 +48,10 @@ function Navbar() {
         <li className="list-none">
           <Link to="/" className="font-semibold">Home</Link>
         </li>
+       
+        
         <li className='list-none'>
-            <Link to='/model-voiture' className='font-semibold'>Models</Link>
-        </li>
-        <li className='list-none'>
-            <Link to='/contact' className='font-semibold'>Contact</Link>
-        </li>
-        <li className='list-none'>
-            <Link to='about' className='font-semibold'>About</Link>
-            <a href="/models" className='font-semibold'>Models</a>
-            {/* <Link to='/models' className='font-semibold'>Models</Link> */}
+            <Link to='/models' className='font-semibold'>Models</Link>
         </li>
         <li className="list-none">
           <Link to="/contact" className="font-semibold">Contact</Link>

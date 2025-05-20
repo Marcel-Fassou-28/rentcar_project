@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function FooterSection() {
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6">
+    <footer className="relative bg-gray-900 text-white pt-12 pb-6">
       <div className="container mx-auto px-4">
         {/* Top section with logo and info */}
         <div className="flex flex-col md:flex-row justify-between mb-10">
