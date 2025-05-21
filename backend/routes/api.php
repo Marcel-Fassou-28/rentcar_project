@@ -64,6 +64,7 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
     /**
      * Gestion des utilisateurs
      */
+   
     Route::prefix('admin/users')->group(function () {
         Route::get('/',   [ClientController::class, 'index']);
         Route::delete('/delete/{id}',  [ClientController::class, 'destroy']);

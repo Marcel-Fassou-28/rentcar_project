@@ -14,8 +14,8 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthay', 'adresse', 'telephone', 'photo', 'clients.permisConduire')
-            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
+        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'telephone', 'photo') //'clients.permisConduire')
+            //->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('role', 'client')
             ->get();
 

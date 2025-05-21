@@ -1,7 +1,15 @@
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import HistoriqueReservations from "./User/admin/composants/HistoriqueReservations";
-
+import HistoriqueReservations from "./HistoriqueReservations";
+import Sidebar from "./Sidebar";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 const Reservations = () => {
   const recentReservations = [
     {
@@ -159,13 +167,13 @@ const Reservations = () => {
   ];
 
   const columns = [
-    { field: "id", headerName: "ID", flex:1 },
-    { field: "client", headerName: "Client", flex:1.5 },
-    { field: "voiture", headerName: "Voiture", flex:1},
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "client", headerName: "Client", flex: 1.5 },
+    { field: "voiture", headerName: "Voiture", flex: 1 },
     {
       field: "Periode",
       headerName: "Periode",
-      flex:1.5,
+      flex: 1.5,
       renderCell: (params) => (
         <div>
           <p>
@@ -174,30 +182,80 @@ const Reservations = () => {
         </div>
       ),
     },
-    { field: "status", headerName: "Status", flex:1 ,
-      renderCell:(params)=>(
+    {
+      field: "statut",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params) => (
         <div>
-          <p className={params.row.status === "En cours" ? "text-green-500" : "text-red-500"}>{params.row.status}</p>
+          <p
+            className={
+              params.row.status === "En cours"
+                ? "text-green-500"
+                : "text-red-500"
+            }
+          >
+            {params.row.status}
+          </p>
         </div>
-      )
+      ),
     },
   ];
   const paginationModel = { page: 0, pageSize: 10 };
+  const statusData = [
+    { name: 'En cours', value: recentReservations.filter(res => res.status === 'En cours').length },
+    { name: 'Terminée', value: recentReservations.filter(res => res.status === 'Terminée').length }
+  ];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1', '#a4de6c', '#d0ed57'];
+  
 
   return (
-    <div className=" pt-16 shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[96%] lg:w-[98%] ">
-      <h2 className="text-2xl  m-4 text-gray-500">Reservations</h2>
-      <Paper sx={{ height: 700, width: "100%" }}>
-        <DataGrid
-        headerClassName="text-blue-500"
-          rows={recentReservations}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[10]}
-          checkboxSelection
-          sx={{ border: 0, }}
-        />
-      </Paper>
+    <div className="flex pt-16">
+      <Sidebar />
+      <div className="flex flex-col items-center w-full">
+      <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
+        <h2 className="text-2xl  m-4 text-gray-500">Reservations</h2>
+        <Paper sx={{ height: 700, width: "100%" }}>
+          <DataGrid
+            headerClassName="text-blue-500"
+            rows={recentReservations}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[10]}
+            checkboxSelection
+            sx={{ border: 0 }}
+          />
+        </Paper>
+      </div>
+      <div className=" shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
+        <h2 className="text-2xl  m-4 text-gray-500">Etats Des Reservations</h2>
+
+        <Paper className="flex justify-center items-center">
+          <ResponsiveContainer width="80%" height={270} className="my-4">
+            <PieChart width={500} height={500}>
+              <Pie
+                data={statusData}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+                
+              >
+                {statusData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </Paper>
+      </div>
+    </div>
     </div>
   );
 };
