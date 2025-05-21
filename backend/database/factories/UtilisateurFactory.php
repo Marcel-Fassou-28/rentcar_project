@@ -17,6 +17,7 @@ class UtilisateurFactory extends Factory
             'password' => password_hash($this->faker->password, PASSWORD_BCRYPT),
             'birthday' => $this->faker->date('Y-m-d', '-18 years'),
             'adresse' => $this->faker->address,
+            'telephone' => $this->faker->phoneNumber(),
             'photo' => $this->faker->imageUrl(200, 200, 'people'),
             'email_verified_at' => $this->faker->optional()->dateTimeBetween('-1 year', 'now'),
             'created_at' => now(),

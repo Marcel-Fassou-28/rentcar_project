@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Api\Admin\VoitureController;
 use App\Http\Controllers\Api\VoitureController as ApiVoitureController;
 use App\Http\Controllers\Api\UserController;
@@ -21,8 +22,14 @@ Route::aliasMiddleware('role', \App\Http\Middleware\RoleMiddleware::class);
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
-Route::get('/ressources', [UserController::class, 'all']); // Pour certaine information de l'accueil
+Route::get('/ressources', [UserController::class, 'home']); // Pour certaine information de l'accueil
 Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les models de voiture
+
+Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
+
+Route::get('/auth/google', [UserController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
 
 /*
 |------------------------------------------------------------------
@@ -41,7 +48,10 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
     /** Pour les reservations */
     Route::prefix('user/reservations')->group(function() {
         Route::get('/my', [ReservationController::class, 'index']);
-        Route::get('/my/{}');
+        Route::post('/my', [ReservationController::class, 'store']);
+        Route::patch('/my/{id}', [ReservationController::class, 'update']);
+        Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
+        Route::get('/my/{id}', [ReservationController::class, 'show']);
     });
 
 });
@@ -52,13 +62,23 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
 |------------------------------------------------------------------
 */
 Route::middleware(['auth:sanctum','role:admin'])->group(function () {
-    Route::get('/admin/dashboard/{id}/{name}', [AdminController::class, 'dashboard']);
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    
+    /** Pour gérer le profil */
+    Route::prefix('admin/profil')->group(function() {
+        Route::get('/{id}', [AdminController::class, 'profil']);
+        Route::patch('/update/{id}', [AdminController::class, 'update']);
+    });
 
     /** 
      * Gestion des réservations 
      */
     Route::prefix('admin/reservations')->group(function () {
-
+        Route::get('/', [AdminReservationController::class, 'index']);
+        Route::post('/add', [AdminReservationController::class, 'store']);
+        Route::patch('/update/{id}', [AdminReservationController::class, 'update']);
+        Route::delete('/delete/{id}', [AdminReservationController::class, 'destroy']);
+        Route::get('/detail/{id}', [AdminReservationController::class, 'show']);
     });
 
     /**
@@ -83,3 +103,5 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
     });
 
 });
+
+Route::middleware('auth:api')->post('/logout', [UserController::class, 'logout'])->name('api.logout');

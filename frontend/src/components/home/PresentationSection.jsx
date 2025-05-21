@@ -24,7 +24,7 @@ function PresentationSection() {
 
       {/* Description de l'entreprise */}
       <div className="flex flex-col gap-3 md:gap-2 md:flex-row align-top">
-        <motion.iv 
+        <motion.div 
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
@@ -33,7 +33,7 @@ function PresentationSection() {
             <Description title='qualité' content='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam magni expedita ducimus, ratione nulla consequuntur!' />
             <Description title='flexibilité' content='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam magni expedita ducimus, ratione nulla consequuntur!' />
             <Description title='disponibilité' content='Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam magni expedita ducimus, ratione nulla consequuntur!' />
-        </motion.iv>
+        </motion.div>
         <motion.div 
         className='p-4'
         initial={{ opacity: 0, y: -30 }}

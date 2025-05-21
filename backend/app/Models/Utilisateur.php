@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomResetPassword;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,6 +52,7 @@ class Utilisateur extends Authenticatable
     protected $hidden = [
         'password',
         'token',
+        'remember_token'
     ];
 
     protected $fillable = [
@@ -65,6 +67,7 @@ class Utilisateur extends Authenticatable
         'token',
         'birthday',
         'telephone',
+        'remember_token',
     ];
 
     /**
@@ -81,5 +84,10 @@ class Utilisateur extends Authenticatable
     public function client()
     {
         return $this->hasOne(Client::class, 'id', 'id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
     }
 }

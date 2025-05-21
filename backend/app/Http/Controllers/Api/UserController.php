@@ -5,12 +5,20 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\Note;
 use App\Models\Utilisateur;
+use App\Notifications\WelcomeNotification;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
 {
@@ -23,7 +31,9 @@ class UserController extends Controller
         try {
             $user = $request->validated();
             $user['password'] = Hash::make($user['password']);
+
             $user = Utilisateur::create($user);
+            $user->notify(new WelcomeNotification($user));
 
             return response()->json([
                 'success' => true,
@@ -45,6 +55,10 @@ class UserController extends Controller
     {
         if (Auth::attempt($request->only(['email', 'password']))) {
             $user = Auth::user();
+            $photoUrl = $user->photo && Storage::disk('public')->exists('profil/' . $user->photo)
+            ? url('storage/profil/' . $user->photo)
+            : null;
+            $user->photo = $photoUrl;
             $token = $user->createToken('MA_CLEE_SECRETE')->plainTextToken;
 
             return response()->json([
@@ -69,6 +83,185 @@ class UserController extends Controller
     public function all() {
 
     }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = Auth::guard('api')->user();
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            // Revoke the current token
+            $request->user()->currentAccessToken()->delete();
+
+            // Optional: Revoke all tokens for the user
+            $request->user()->tokens()->delete();
+            return response()->json(['message' => 'Successfully logged out'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Logout failed'], 500);
+        }
+    }
+ 
+    /**
+     * Pour afficher certaines statistiques à l'accueil
+     */
+    public function home()
+    {
+        $totalUtilisateurs = Utilisateur::count();
+        $totalNotes = Note::count();
+        $totalCommentaires = Note::whereNotNull('commentaire')
+            ->where('commentaire', '!=', '')
+            ->count();
+
+        $moyenneNotes = round(Note::avg('note') ?? 0, 1);
+
+        return response()->json([
+            'utilisateurs' => $totalUtilisateurs,
+            'notes' => [
+                'total' => $totalNotes,
+                'commentaires' => $totalCommentaires,
+                'moyenne' => $moyenneNotes,
+            ],
+        ], 200);
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $status = Password::sendResetLink($request->only('email'));
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['success' => true, 'message' => __($status)], 200)
+            : response()->json(['success' => false, 'message' => __($status)], 422);
+    }
+
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill(['password' => bcrypt($password)])
+                    ->setRememberToken(Str::random(60));
+                $user->save();
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['success' => true, 'message' => __($status)], 200)
+            : response()->json(['success' => false, 'message' => __($status)], 422);
+    }
+
+    /**
+     * Redirige vers Google pour l'authentification OAuth.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')
+            ->stateless()
+            ->with(['access_type' => 'offline', 'prompt' => 'consent'])
+            ->redirect();
+    }
+
+    /**
+     * Gère le callback Google pour connexion ou inscription.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+            $user = Utilisateur::where('email', $googleUser->email)->first();
+
+            if ($user) {
+                // Connexion de l'utilisateur existant
+                return $this->loginAndRespond($user, 'Connexion réussie avec Google.', 200);
+            }
+
+            // Création d'un nouvel utilisateur
+            $user = Utilisateur::create([
+                'nom' => $googleUser->user['family_name'] ?? 'N/A',
+                'prenom' => $googleUser->user['given_name'] ?? 'N/A',
+                'email' => $googleUser->email,
+                'birthday' => $googleUser->user['birthday'] ?? 'N/A',
+                'telephone' => $googleUser->user['phone'] ?? 'N/A',
+                'password' => bcrypt(Str::random(16)),
+                'role' => 'client',
+                'photo' => $this->downloadGoogleProfilePicture($googleUser->avatar),
+            ]);
+
+            $user->notify(new WelcomeNotification($user));
+
+            return $this->loginAndRespond($user, 'Inscription réussie avec Google.', 201);
+        } catch (\Exception $e) {
+            Log::error('Erreur Google Auth: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Échec de l\'authentification Google.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Connecte l'utilisateur et retourne une réponse JSON.
+     *
+     * @param  \App\Models\Utilisateur  $user
+     * @param  string  $message
+     * @param  int  $statusCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function loginAndRespond($user, $message, $statusCode)
+    {
+        Auth::login($user);
+        $photoUrl = $user->photo && Storage::disk('public')->exists('profil/' . $user->photo)
+            ? url('storage/profil/' . $user->photo)
+            : null;
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'user' => array_merge($user->toArray(), ['photo' => $photoUrl]),
+            'token' => $user->createToken('MA_CLEE_SECRET')->plainTextToken,
+        ], $statusCode);
+    }
+
+    /**
+     * Télécharge et enregistre la photo de profil Google.
+     *
+     * @param  string|null  $url
+     * @return string|null
+     */
+    private function downloadGoogleProfilePicture($url)
+    {
+        if (!$url) {
+            return null;
+        }
+
+        try {
+            $contents = @file_get_contents($url);
+            if ($contents === false) {
+                Log::warning('Échec du téléchargement de la photo Google: URL invalide.');
+                return null;
+            }
+
+            $filename = 'google_' . uniqid() . '.jpg';
+            Storage::disk('public')->put('profil/' . $filename, $contents);
+            return $filename;
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du téléchargement de la photo Google: ' . $e->getMessage());
+            return null;
+        }
+    }
 }
+
 
 

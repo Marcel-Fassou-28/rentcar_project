@@ -31,7 +31,6 @@ class Client extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'telephone',
         'permisConduire'
     ];
 
@@ -49,5 +48,12 @@ class Client extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'idClient', 'id');
+    }
+
+    /**
+     * Relation avec la table notes (One-to-One)
+     */
+    public function notes() {
+        return $this->hasOne(Note::class, 'idClient', 'id');
     }
 }

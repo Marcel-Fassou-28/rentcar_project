@@ -256,6 +256,20 @@ const Reservations = () => {
         </Paper>
       </div>
     </div>
+    <div className=" pt-16 shadow-[0_0_15px_rgba(0,0,0,0.1)] p-2 w-[96%] mx-auto lg:w-full ">
+      <h2 className="text-2xl  m-4 text-gray-500">Reservations</h2>
+      <Paper sx={{ height: 700, width: "100%" }}>
+        <DataGrid
+        headerClassName="text-blue-500"
+          rows={recentReservations}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[10]}
+          checkboxSelection
+          sx={{ border: 0, }}
+        />
+      </Paper>
+    </div>
     </div>
   );
 };

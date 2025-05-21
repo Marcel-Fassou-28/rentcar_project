@@ -19,7 +19,6 @@ class ClientFactory extends Factory
 
         return [
             'id' => $utilisateur->id,
-            'telephone' => $this->faker->phoneNumber,
             'permisConduire' => $this->faker->optional()->bothify('??######'),
         ];
     }
