@@ -19,18 +19,17 @@ import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
 
-import DashboardClient from './components/pages/User/client/dashboard';
-import MesReservations from './components/pages/User/client/MesReservations';
-import ReserverVoiture from './components/pages/User/client/ReserverVoiture';
-import ProfilClient from './components/pages/User/client/ProfilClient';
+import DashboardClient from './components/pages/User/client/dashboard'
+import MesReservations from './components/pages/User/client/MesReservations'
+import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
+import ProfilClient from './components/pages/User/client/ProfilClient'
 
 function App() {
-
   return (
     <>
-    <Navbar />
+      <Navbar />
       <Routes>
-        {/* Routes Public */}
+        {/* Routes publiques */}
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
@@ -40,22 +39,21 @@ function App() {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
 
-        {/* Pour admin */}
-        <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
+        {/* Routes admin (à adapter si nécessaire) */}
+        <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><DashboardClient /></ProtectedRoute>} />
+        <Route path='/:role/reservation' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
 
-        {/* Pour les clients */}
+        {/* Routes client sécurisées */}
+        <Route path='/client/dashboard' element={<ProtectedRoute><DashboardClient /></ProtectedRoute>} />
+        <Route path='/client/mes-reservations' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
+        <Route path='/client/reserver' element={<ProtectedRoute><ReserverVoiture /></ProtectedRoute>} />
+        <Route path='/client/mon-profil' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
 
-
-        {/* Pour un utilisateur connecté */}
-        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
+        {/* Routes utilisateurs sécurisées */}
         <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
-
-        {/* Routes communes */}
-
+        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
       </Routes>
-
-    <FooterSection />
+      <FooterSection />
     </>
   )
 }
