@@ -18,31 +18,17 @@ import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
 import DashboardContainer from './components/pages/User/DashboardContainer'
+import DashboardClient from './components/pages/User/client/dashboard'
+import MesReservations from './components/pages/User/client/MesReservations'
+import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
+import ProfilClient from './components/pages/User/client/ProfilClient'
 
 function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
-    const photo = params.get('photo');
-    const error = params.get('error');
-
-    if (token) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('photo', photo || '');
-      // La redirection est gérée par l'URL :role/dashboard/:id/nom-prenom
-    } else if (error) {
-      navigate('/login', { state: { error: decodeURIComponent(error) } });
-    }
-  }, [location, navigate]);
-
   return (
     <>
-    <Navbar />
+      <Navbar />
       <Routes>
-        {/* Routes Public */}
+        
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
@@ -51,14 +37,11 @@ function App() {
         <Route path='/about' element={<About />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
-
-        {/* Pour admin */}
-        <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
-
-        {/* Pour les clients */}
-
-        {/* Pour un utilisateur connecté */}
-        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
+        
+        <Route path='/:role/reservation' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
+        <Route path='/client/mes-reservations' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
+        <Route path='/:role/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
+        <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
 
         {/* Routes communes */}
         <Route
@@ -67,6 +50,9 @@ function App() {
           <ProtectedRoute allowedRoles={['admin', 'client']}>
             <DashboardContainer />
           </ProtectedRoute> } />
+
+        <Route path='/:role/models' element={<ProtectedRoute allowedRoles={['client', 'admin']}><Interface /></ProtectedRoute>} />
+        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
 
       </Routes>
     <FooterSection />

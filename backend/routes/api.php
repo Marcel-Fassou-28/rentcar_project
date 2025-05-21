@@ -27,7 +27,7 @@ Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les mod
 Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
 
-Route::get('/auth/google', [UserController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/redirect', [UserController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
 Route::get('/verify-new-email/{token}', [ClientController::class, 'verifyNewEmail']);
 /*

@@ -4,7 +4,6 @@ import { FcGoogle } from 'react-icons/fc';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../config/Axios';
-import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
    const [formData, setFormData] = useState({
@@ -92,23 +91,7 @@ const Register = () => {
     setPasswordMatchError(password !== newConfirmPassword);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            const response = await axios.get('/auth/google/callback', {
-                headers: { Authorization: `Bearer ${credentialResponse.credential}` },
-            });
-            if (response.data.success) {
-                localStorage.setItem('token', response.data.token);
-                setSuccess(response.data.message);
-                setTimeout(() => navigate('/dashboard'), 2000);
-            }
-        } catch (err) {
-            setError(err.response?.data?.message || 'Erreur Google Auth.');
-        }
-    };
-
-
+  
   // Animation variants pour les sections
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -408,11 +391,7 @@ const Register = () => {
             <button
               className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 hover:bg-gray-50 transition"
             >
-              <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => setError('Échec de l\'inscription Google.')}
-              text="signup_with"
-            />
+              <FcGoogle /> S'incrire avec google
             </button>
           </motion.div>
 

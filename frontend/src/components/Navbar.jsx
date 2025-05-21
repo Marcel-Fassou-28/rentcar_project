@@ -37,7 +37,7 @@ const Navbar = () => {
       token && id && slug && role
         ? [
             { to: `/${role}/dashboard/${id}/${slug}`, label: 'Dashboard', icon: <Home size={20} /> },
-            { to: '/models', label: 'Models', icon: <CarFront size={20} /> },
+            { to: `/${role}/models`, label: 'Models', icon: <CarFront size={20} /> },
             { to: `/${role}/reservation`, label: 'Reservation', icon: <CarFront size={20} /> },
             { to: '/contact', label: 'Contact', icon: <Contact size={20} /> },
           ]
@@ -51,7 +51,7 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="fixed top-0 w-full py-3 bg-white flex items-center justify-between shadow-sm h-16 z-10 px-4">
+    <nav className="fixed top-0 w-full py-3 bg-white flex items-center justify-between shadow-sm h-16 z-20 px-4">
       {/* Hamburger (mobile) */}
       <div className="md:hidden flex items-center">
         <button
@@ -121,7 +121,7 @@ const Navbar = () => {
         {token ? (
           <div className="flex items-center space-x-4">
             {/* Photo de profil */}
-            <Link to={`/my/profil/${id}/${slug}`} aria-label="Profil">
+            <Link to={`${role}/my/profil/${id}`} aria-label="Profil">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -169,7 +169,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed top-16 left-0 w-full bg-gray-50 shadow-md z-40"
+            className="fixed top-16 left-0 w-full bg-gray-50 shadow-md z-30"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
