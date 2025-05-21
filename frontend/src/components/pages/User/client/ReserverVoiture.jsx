@@ -17,7 +17,10 @@ const ReserverVoiture = () => {
     setLoading(true);
     axios.get('/voitures')
       .then(res => {
-        setVoitures(res.data);
+        console.log('voitures:', res.data); // pour voir la structure
+        // ✅ adapte ici selon ta structure API
+        const cars = res.data?.data ?? res.data;
+        setVoitures(Array.isArray(cars) ? cars : []);
         setLoading(false);
       })
       .catch(() => {
@@ -78,7 +81,6 @@ const ReserverVoiture = () => {
     }
   };
 
-  // Calculate minimum dates for the form
   const today = new Date().toISOString().split('T')[0];
   const minEndDate = formData.dateDebut || today;
 
@@ -144,7 +146,7 @@ const ReserverVoiture = () => {
                     required
                   >
                     <option value="">Sélectionnez une voiture</option>
-                    {voitures.map(v => (
+                    {Array.isArray(voitures) && voitures.map(v => (
                       <option key={v.id} value={v.id}>
                         {v.car_name} - {v.car_model}
                       </option>
