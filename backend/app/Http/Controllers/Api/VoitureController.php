@@ -18,12 +18,16 @@ class VoitureController extends Controller
             'id', 
             'car_name', 
             'car_model', 
-            'car_categorie', 
+            'car_categorie',
+            'price', 
+            'moteur',
+            'transmission',
+            'immatriculation',
             'statut', 
             'car_photo'
         )
-            ->get()
-            ->groupBy('car_categorie');
+            ->get();
+            // ->groupBy('car_categorie');
 
         if ($voitures) {
             return response()->json([

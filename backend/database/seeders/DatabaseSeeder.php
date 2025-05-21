@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+         
         Client::truncate();
         Administrateur::truncate();
         Utilisateur::truncate();
