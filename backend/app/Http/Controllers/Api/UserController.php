@@ -9,6 +9,7 @@ use App\Models\Note;
 use App\Models\Utilisateur;
 use App\Notifications\WelcomeNotification;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -163,8 +165,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(): RedirectResponse
     {
+        Log::info('Redirection vers Google OAuth initiée');
         return Socialite::driver('google')
             ->stateless()
             ->with(['access_type' => 'offline', 'prompt' => 'consent'])
@@ -174,64 +177,92 @@ class UserController extends Controller
     /**
      * Gère le callback Google pour connexion ou inscription.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(): RedirectResponse
     {
         try {
+            Log::info('Début du callback Google', ['query' => request()->query()]);
+            $httpClient = new Client(['verify' => false]);
+            Socialite::driver('google')->setHttpClient($httpClient);
             $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
+            Log::info('Utilisateur Google récupéré', [
+                'email' => $googleUser->email,
+                'name' => $googleUser->name,
+            ]);
+
             $user = Utilisateur::where('email', $googleUser->email)->first();
 
             if ($user) {
-                // Connexion de l'utilisateur existant
-                return $this->loginAndRespond($user, 'Connexion réussie avec Google.', 200);
+                Log::info('Utilisateur existant trouvé', ['email' => $user->email]);
+                return $this->loginAndRedirect($user);
             }
 
-            // Création d'un nouvel utilisateur
+            Log::info('Création d’un nouvel utilisateur', ['email' => $googleUser->email]);
             $user = Utilisateur::create([
                 'nom' => $googleUser->user['family_name'] ?? 'N/A',
                 'prenom' => $googleUser->user['given_name'] ?? 'N/A',
                 'email' => $googleUser->email,
-                'birthday' => $googleUser->user['birthday'] ?? 'N/A',
-                'telephone' => $googleUser->user['phone'] ?? 'N/A',
+                'birthday' => null,
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'client',
                 'photo' => $this->downloadGoogleProfilePicture($googleUser->avatar),
+                'telephone' => '0000000000'
             ]);
 
-            $user->notify(new WelcomeNotification($user));
+            Log::info('Utilisateur créé', ['email' => $user->email]);
 
-            return $this->loginAndRespond($user, 'Inscription réussie avec Google.', 201);
+            $user->notify(new WelcomeNotification($user));
+            Log::info('Notification de bienvenue envoyée', ['email' => $user->email]);
+
+            return $this->loginAndRedirect($user);
         } catch (\Exception $e) {
-            Log::error('Erreur Google Auth: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Échec de l\'authentification Google.',
-            ], 500);
+            Log::error('Erreur Google Auth', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'code' => $e->getCode(),
+            ]);
+            return redirect(config('app.frontend_url', 'http://localhost:5173') . '/login?error=' . urlencode('Échec de l\'authentification Google: ' . $e->getMessage()));
         }
     }
 
     /**
-     * Connecte l'utilisateur et retourne une réponse JSON.
+     * Connecte l'utilisateur et redirige vers la page intermédiaire pour stocker le token.
      *
      * @param  \App\Models\Utilisateur  $user
-     * @param  string  $message
-     * @param  int  $statusCode
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    private function loginAndRespond($user, $message, $statusCode)
+    private function loginAndRedirect(Utilisateur $user): RedirectResponse
     {
         Auth::login($user);
         $photoUrl = $user->photo && Storage::disk('public')->exists('profil/' . $user->photo)
             ? url('storage/profil/' . $user->photo)
             : null;
 
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'user' => array_merge($user->toArray(), ['photo' => $photoUrl]),
-            'token' => $user->createToken('MA_CLEE_SECRET')->plainTextToken,
-        ], $statusCode);
+        $token = $user->createToken('MA_CLEE_SECRET')->plainTextToken;
+        Log::info('Utilisateur connecté et token créé', [
+            'email' => $user->email,
+            'role' => $user->role,
+            'id' => $user->id,
+        ]);
+
+        // Générer le slug nom-prenom en minuscules
+        $nameSlug = Str::slug(($user->nom ?? 'N/A') . '-' . ($user->prenom ?? 'N/A'), '-');
+
+        // Rediriger vers la page intermédiaire store-token
+        $storeTokenUrl = sprintf(
+            '%s/store-token?token=%s&photo=%s&role=%s&id=%s&name=%s',
+            config('app.frontend_url', 'http://localhost:5173'),
+            urlencode($token),
+            urlencode($photoUrl ?? ''),
+            urlencode($user->role),
+            urlencode($user->id),
+            urlencode($nameSlug)
+        );
+
+        Log::info('Redirection vers store-token', ['url' => $storeTokenUrl]);
+        return redirect($storeTokenUrl);
     }
 
     /**
@@ -240,24 +271,29 @@ class UserController extends Controller
      * @param  string|null  $url
      * @return string|null
      */
-    private function downloadGoogleProfilePicture($url)
+    private function downloadGoogleProfilePicture(?string $url): ?string
     {
         if (!$url) {
+            Log::warning('Aucune URL de photo fournie');
             return null;
         }
 
         try {
             $contents = @file_get_contents($url);
             if ($contents === false) {
-                Log::warning('Échec du téléchargement de la photo Google: URL invalide.');
+                Log::warning('Échec du téléchargement de la photo Google', ['url' => $url]);
                 return null;
             }
 
             $filename = 'google_' . uniqid() . '.jpg';
             Storage::disk('public')->put('profil/' . $filename, $contents);
+            Log::info('Photo Google enregistrée', ['filename' => $filename]);
             return $filename;
         } catch (\Exception $e) {
-            Log::error('Erreur lors du téléchargement de la photo Google: ' . $e->getMessage());
+            Log::error('Erreur lors du téléchargement de la photo Google', [
+                'url' => $url,
+                'message' => $e->getMessage(),
+            ]);
             return null;
         }
     }

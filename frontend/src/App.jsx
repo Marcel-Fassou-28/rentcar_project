@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Home from './components/pages/Home'
 import Login from './components/pages/Login'
 import Register from './components/pages/Register'
@@ -13,18 +13,30 @@ import About from './components/pages/About'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Deconnexion from './components/pages/Deconnexion'
-import Dashboard from './components/pages/User/admin/dashboard'
 import Reservations from './components/pages/Reservations'
 import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
-
-import DashboardClient from './components/pages/User/client/dashboard';
-import MesReservations from './components/pages/User/client/MesReservations';
-import ReserverVoiture from './components/pages/User/client/ReserverVoiture';
-import ProfilClient from './components/pages/User/client/ProfilClient';
+import DashboardContainer from './components/pages/User/DashboardContainer'
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const photo = params.get('photo');
+    const error = params.get('error');
+
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('photo', photo || '');
+      // La redirection est gérée par l'URL :role/dashboard/:id/nom-prenom
+    } else if (error) {
+      navigate('/login', { state: { error: decodeURIComponent(error) } });
+    }
+  }, [location, navigate]);
 
   return (
     <>
@@ -41,20 +53,22 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword />} />
 
         {/* Pour admin */}
-        <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
 
         {/* Pour les clients */}
 
-
         {/* Pour un utilisateur connecté */}
         <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
-        <Route path='/my/profil/:id/:name' element={<ProtectedRoute><Profil /></ProtectedRoute>} />
 
         {/* Routes communes */}
+        <Route
+          path="/:role/dashboard/:id/:name"
+          element={
+          <ProtectedRoute allowedRoles={['admin', 'client']}>
+            <DashboardContainer />
+          </ProtectedRoute> } />
 
       </Routes>
-
     <FooterSection />
     </>
   )
