@@ -21,14 +21,18 @@ class ReservationController extends Controller
     }
 
     // Créer une nouvelle réservation pour le client connecté
-    public function store(ReservationRequest $request)
-    {
-        $validated = $request->validated();
-        $validated['idClient'] = Auth::id(); // force l'association au client connecté
+    public function store(ReservationRequest $request){
+    $validated = $request->validated();
 
-        $reservation = Reservation::create($validated);
-        return response()->json($reservation, 201);
-    }
+    $validated['idClient'] = Auth::id(); // Le client connecté
+    $validated['statut'] = 'en attente'; // Ajoute le statut automatiquement
+
+    $reservation = Reservation::create($validated);
+
+    return response()->json($reservation, 201);
+}
+
+
 
     // Afficher une seule réservation si elle appartient au client connecté
     public function show($id)

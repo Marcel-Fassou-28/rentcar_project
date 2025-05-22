@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS voitures (
     car_name VARCHAR(100) NOT NULL,
     car_model VARCHAR(100) NOT NULL,
     car_categorie ENUM('SUV', 'berline', 'citadine', 'luxe', 'compact', '4x4'),
-    prix DOUBLE(10, 2) NOT NULL,
+    price DOUBLE(10, 2) NOT NULL,
     immatriculation VARCHAR(100) NOT NULL UNIQUE,
     statut ENUM('reservé', 'disponible', 'loué'),
     car_photo VARCHAR(250) DEFAULT NULL,

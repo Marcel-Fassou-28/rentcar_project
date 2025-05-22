@@ -20,8 +20,6 @@ class VoitureController extends Controller
             'car_model', 
             'car_categorie',
             'price', 
-            'moteur',
-            'transmission',
             'immatriculation',
             'statut', 
             'car_photo'

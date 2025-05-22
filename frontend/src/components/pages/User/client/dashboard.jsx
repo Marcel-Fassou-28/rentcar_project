@@ -7,18 +7,18 @@ import { Link } from 'react-router-dom';
 
 const DashboardClient = () => {
   const [userName, setUserName] = useState('');
+  const [reservations, setReservations] = useState([]);
   const [stats, setStats] = useState({
-    reservationsActives: 2,
-    reservationsPassees: 7,
+    reservationsActives: 0,
+    reservationsPassees: 0,
     pointsFidelite: 450,
     notificationsNonLues: 3
   });
 
   const token = localStorage.getItem('token');
   const user = localStorage.getItem('user');
-  console.log(user);
-
   let parsedUser;
+
   try {
     parsedUser = JSON.parse(user);
   } catch (error) {
@@ -26,37 +26,44 @@ const DashboardClient = () => {
     return;
   }
 
-  const reservationsActives = [
-    { id: 1, vehicule: 'Renault Clio', debut: '15/06/2025', fin: '20/06/2025', status: 'confirmée' },
-    { id: 2, vehicule: 'Peugeot 3008', debut: '01/07/2025', fin: '08/07/2025', status: 'en attente' },
-  ];
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`/user/dashboard/${parsedUser.id}`);
         if (response.data.success) {
-          console.log(response.data);
+          setUserName(response.data.name);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du nom utilisateur :', error);
       }
     };
 
+    const fetchReservations = async () => {
+      try {
+        const res = await axios.get('/user/reservations/my');
+        setReservations(res.data);
+        const actives = res.data.filter(r => r.statut !== 'annulée' && r.statut !== 'expiré');
+        const past = res.data.filter(r => r.statut === 'expiré');
+        setStats(prev => ({
+          ...prev,
+          reservationsActives: actives.length,
+          reservationsPassees: past.length
+        }));
+      } catch (err) {
+        console.error("Erreur lors du chargement des réservations :", err);
+      }
+    };
+
     fetchUserData();
+    fetchReservations();
   }, []);
 
   return (
     <div className="pt-16 flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen">
       <SidebarClient />
       <main className="flex-1 p-6">
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-7xl mx-auto"
-        >
-          {/* En-tête */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-7xl mx-auto">
+
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 mb-6 text-white">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
@@ -74,7 +81,6 @@ const DashboardClient = () => {
             </div>
           </div>
 
-          {/* Statistiques */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
               className="bg-white rounded-xl shadow p-5 flex items-center">
@@ -121,7 +127,6 @@ const DashboardClient = () => {
             </motion.div>
           </div>
 
-          {/* Réservations en cours */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center">
@@ -141,40 +146,39 @@ const DashboardClient = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {reservationsActives.map((reservation) => (
-                    <tr key={reservation.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{reservation.vehicule}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{reservation.debut}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{reservation.fin}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${reservation.status === 'confirmée' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                          {reservation.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button className="text-blue-600 hover:text-blue-800 mr-3">Détails</button>
-                        <button className="text-red-600 hover:text-red-800">Annuler</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {reservations
+                    .filter(r => r.statut !== 'annulée' && r.statut !== 'expiré')
+                    .map((reservation) => (
+                      <tr key={reservation.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                          {reservation.voiture?.car_name || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{reservation.dateDebut}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{reservation.dateFin}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={
+                            `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              reservation.statut === 'confirmée'
+                                ? 'bg-green-100 text-green-800'
+                                : reservation.statut === 'en attente'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-gray-100 text-gray-600'
+                            }`
+                          }>
+                            {reservation.statut}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <button className="text-blue-600 hover:text-blue-800 mr-3">Détails</button>
+                          <button className="text-red-600 hover:text-red-800">Annuler</button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
           </motion.div>
 
-          {/* Offres spéciales */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-            className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-700 mb-4">Offres spéciales pour vous</h2>
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg">
-              <p className="font-bold text-lg">10% de réduction sur votre prochaine location</p>
-              <p className="mt-1">Utilisez le code promo: <span className="font-mono bg-white/20 px-2 py-1 rounded">FIDELITE10</span></p>
-              <button className="mt-3 bg-white text-blue-600 px-4 py-2 rounded font-medium hover:bg-gray-100 transition duration-300">
-                En profiter maintenant
-              </button>
-            </div>
-          </motion.div>
         </motion.div>
       </main>
     </div>

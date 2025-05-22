@@ -19,7 +19,7 @@ import Clients from './components/pages/User/admin/composants/Clients'
 import Voiture from './components/pages/User/admin/composants/voiture/Voiture'
 import NewCar from './components/pages/User/admin/composants/voiture/NewCar'
 import ModifierCar from './components/pages/User/admin/composants/voiture/ModifierCar'
-import Reservations from './components/pages/Reservations'
+//import Reservations from './components/pages/Reservations'
 import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
@@ -53,6 +53,7 @@ function App() {
         <Route path='/client/mes-reservations' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
         <Route path='/:role/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
         <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
+
 
         {/* Routes communes */}
         <Route
