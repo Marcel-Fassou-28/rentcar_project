@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function FooterSection() {
   return (
-    <footer className="relative bg-gray-900 text-white pt-12 pb-6 bottom-0">
+    <footer className="relative bg-gray-900 text-white pt-12 pb-6 bottom-0 z-10">
       <div className="container mx-auto px-4">
         {/* Top section with logo and info */}
         <div className="flex flex-col md:flex-row justify-between mb-10">
@@ -31,13 +31,8 @@ function FooterSection() {
                 </Link>
               </li>
               <li>
-                <Link to="/vehicles" className="text-gray-400 hover:text-orange-500 transition duration-300">
+                <Link to="/models" className="text-gray-400 hover:text-orange-500 transition duration-300">
                   Nos véhicules
-                </Link>
-              </li>
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-orange-500 transition duration-300">
-                  Services
                 </Link>
               </li>
               <li>
@@ -89,7 +84,7 @@ function FooterSection() {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-orange-500 mr-2" />
-                <span className="text-gray-400">contact@rentcar.ma</span>
+                <a className="text-gray-400 hover:text-orange-500 transition duration-300" href='mailto:contact@rentcar.ma'>contact@rentcar.ma</a>
               </li>
             </ul>
 
@@ -114,39 +109,9 @@ function FooterSection() {
           </div>
         </div>
 
-        {/* Newsletter */}
-        {/*<div className="border-t border-gray-800 pt-8 pb-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-semibold mb-2">Abonnez-vous à notre newsletter</h3>
-              <p className="text-gray-400">Recevez nos offres spéciales et nouveautés</p>
-            </div>
-            <div className="w-full md:w-1/3">
-              <form className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Votre email" 
-                  className="bg-gray-800 text-white px-4 py-2 rounded-l w-full focus:outline-none"
-                />
-                <button 
-                  type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-r font-semibold transition duration-300"
-                >
-                  S'abonner
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>*/}
-
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} RENT CAR. Tous droits réservés.</p>
-          {/*<div className="mt-2 space-x-4">
-            <a href="#" className="hover:text-orange-500 transition duration-300">Mentions légales</a>
-            <a href="#" className="hover:text-orange-500 transition duration-300">Politique de confidentialité</a>
-            <a href="#" className="hover:text-orange-500 transition duration-300">CGV</a>
-          </div>*/}
         </div>
       </div>
     </footer>

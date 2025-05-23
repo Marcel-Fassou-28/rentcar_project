@@ -44,7 +44,7 @@ const MesReservations = () => {
           transition={{ duration: 0.5 }}
           className="mb-6"
         >
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-800  gap-2">
             <CalendarDays className="text-orange-500" />
             Mes Réservations
           </h2>
@@ -82,30 +82,44 @@ const MesReservations = () => {
                 <tbody>
                   {reservations.map((r) => (
                     <tr key={r.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="p-4 flex items-center gap-2">
+                      <td className="p-4  gap-2">
+                        <div className='flex items-center gap-2'>
                         <Car className="text-orange-500" size={18} />
                         <span className="font-medium">{r.voiture?.car_name || 'N/A'}</span>
+                        </div>
                       </td>
-                      <td className="p-4 flex items-center gap-2">
+
+                      <td className="p-4  gap-2">
+                        <div className='flex items-center gap-2'>
                         <Clock size={16} className="text-gray-400" />
-                        {r.dateDebut}
+                        {r.dateDebut.split('T')[0]}
+                        </div>
                       </td>
-                      <td className="p-4 flex items-center gap-2">
-                        <Clock size={16} className="text-gray-400" />
-                        {r.dateFin}
+
+                      <td className="p-4  gap-2">
+                        <div className='flex items-center gap-2'>
+                            <Clock size={16} className="text-gray-400" />
+                        {r.dateFin.split('T')[0]}
+                        </div>
                       </td>
+
                       <td className="p-4">
+                        <div className='flex items-center gap-2'>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(r.statut)}`}>
                           {r.statut || 'N/A'}
                         </span>
+                        </div>
                       </td>
+
                       <td className="p-4">
+                        <div className='flex items-center gap-2'>
                         <button 
                           className="text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm"
                           onClick={() => console.log('Voir détails', r.id)}
                         >
                           Voir détails
                         </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

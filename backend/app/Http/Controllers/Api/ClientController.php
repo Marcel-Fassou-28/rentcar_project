@@ -13,27 +13,54 @@ use App\Models\Paiement;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of clients.
+     *
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone','created_at', 'photo','clients.permisConduire')
-            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
-            ->where('role', 'client')
-            ->get();
+        try {
+            // Récupérer les clients avec pagination
+            $clients = Utilisateur::where('role', 'client')
+                ->paginate(10); // 10 clients par page, ajustable
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $clients
-        ], 200);
+            // Vérifier si des clients existent
+            if ($clients->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Aucun client trouvé.',
+                    'data' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $clients->items(), // Retourne uniquement les éléments de la page
+                'pagination' => [
+                    'total' => $clients->total(),
+                    'per_page' => $clients->perPage(),
+                    'current_page' => $clients->currentPage(),
+                    'last_page' => $clients->lastPage(),
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la récupération des clients: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la récupération des clients.'
+            ], 500);
+        }
     }
 
     /**

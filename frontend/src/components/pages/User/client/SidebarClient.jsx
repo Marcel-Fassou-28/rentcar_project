@@ -45,7 +45,6 @@ const menuItems = [
   { name: 'Dashboard', icon: <Home size={20} />, path: `/${parsedUser.role}/dashboard/${parsedUser.id}/${fullSlug}` },
   { name: 'Mes Réservations', icon: <Calendar size={20} />, path: `/${parsedUser.role}/reservation` },
   { name: 'Réserver une Voiture', icon: <Car size={20} />, path: `/${parsedUser.role}/reserver` },
-  { name: 'Notifications', icon: <Bell size={20} />, path: `/${parsedUser.role}/notifications`, badge: 3 },
   { name: 'Mon Profil', icon: <User size={20} />, path: `/${parsedUser.role}/my/profil/${parsedUser.id}` },
   { name: 'Paramètres', icon: <Settings size={20} />, path: `/${parsedUser.role}/settings/${parsedUser.id}` },
 ];

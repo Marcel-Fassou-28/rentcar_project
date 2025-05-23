@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Voiture;
 use Illuminate\Http\Request;
 use App\Http\Requests\VoitureRequest;
+use Illuminate\Http\JsonResponse;
 
 class VoitureController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $voitures = Voiture::select(
             'id', 
@@ -33,7 +34,7 @@ class VoitureController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'data' => $voitures
+                'data' => []
             ], 200);
         }
     }
