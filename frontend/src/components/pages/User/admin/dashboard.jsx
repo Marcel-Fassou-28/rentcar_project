@@ -21,6 +21,7 @@ const[voitures, setVoitures] = useState([]);
 const [clients, setClients] = useState([]);
 const [revenus, setRevenus] = useState([]);
 const [date, setDate] = useState(new Date());
+console.log(user);
 
   useEffect(() => {
 
