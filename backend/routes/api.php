@@ -29,6 +29,14 @@ Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
 
 Route::post('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
 Route::get('/verify-new-email/{token}', [ClientController::class, 'verifyNewEmail']);
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::prefix('user/profil')->group(function() {
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::patch('/update/{id}', [UserController::class, 'update']);
+    });
+});
 /*
 |------------------------------------------------------------------
 | Client seulement
@@ -36,12 +44,6 @@ Route::get('/verify-new-email/{token}', [ClientController::class, 'verifyNewEmai
 */
 Route::middleware(['auth:sanctum','role:client'])->group(function () {
     Route::get('/user/dashboard/{id}', [ClientController::class, 'dashboard']);
-
-    /** Pour gérer le profil */
-    Route::prefix('user/profil')->group(function() {
-        Route::get('/{id}', [ClientController::class, 'show']);
-        Route::patch('/update/{id}', [ClientController::class, 'update']);
-    });
 
     /** Pour les reservations */
     Route::prefix('user/reservations')->group(function() {
@@ -72,10 +74,10 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
     
     /** Pour gérer le profil */
-    Route::prefix('admin/profil')->group(function() {
+    /*Route::prefix('admin/profil')->group(function() {
         Route::get('/{id}', [AdminController::class, 'profil']);
         Route::patch('/update/{id}', [AdminController::class, 'update']);
-    });
+    });*/
 
     /** 
      * Gestion des réservations 

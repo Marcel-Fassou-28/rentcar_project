@@ -1,35 +1,35 @@
-import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+
+{/* Public components */}
 import Home from './components/pages/Home'
 import Login from './components/pages/Login'
 import Register from './components/pages/Register'
 import FooterSection from './components/common/FooterSection'
-
+import ForgotPassword from './components/pages/ForgotPassword'
+import ResetPassword from './components/pages/ResetPassword'
 import Contact from './components/pages/Contact'
 import Interface from './components/pages/Models/interface'
-
 import About from './components/pages/About'
-import ProtectedRoute from './components/ProtectedRoute'
 
-import Deconnexion from './components/pages/Deconnexion'
-import Dashboard from './components/pages/User/admin/dashboard'
+{/* ROutes pour administrateurs */}
 import Reservations from './components/pages/User/admin/composants/Reservations'
 import Clients from './components/pages/User/admin/composants/Clients'
 import Voiture from './components/pages/User/admin/composants/voiture/Voiture'
 import NewCar from './components/pages/User/admin/composants/voiture/NewCar'
 import ModifierCar from './components/pages/User/admin/composants/voiture/ModifierCar'
 
-//import Reservations from './components/pages/Reservations'
-import ForgotPassword from './components/pages/ForgotPassword'
-import ResetPassword from './components/pages/ResetPassword'
-import Profil from './components/pages/User/Profil'
-import DashboardContainer from './components/pages/User/DashboardContainer'
-import DashboardClient from './components/pages/User/client/dashboard'
+{/* Routes Pour clients */}
 import MesReservations from './components/pages/User/client/MesReservations'
 import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
-import ProfilClient from './components/pages/User/client/ProfilClient'
-import { GoogleOAuthProvider } from '@react-oauth/google'
+
+{/* Portected Routes */}
+import Deconnexion from './components/pages/Deconnexion'
+import DashboardContainer from './components/pages/User/DashboardContainer'
+import Profil from './components/pages/User/Profil'
+
+
 
 function App() {
   return (
@@ -42,19 +42,20 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/models' element={<Interface />} />
-        <Route path='/reservation' element={<Reservations />} />
-        <Route path='/utilisateurs' element={<Clients />} />
-        <Route path = '/voitures' element={<Voiture/>} />
-        <Route path='/new' element={<NewCar/>} />
-        <Route path='/modifyCar/:id' element={<ModifierCar />} />
         <Route path='/about' element={<About />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         
-        <Route path='/:role/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
-        <Route path='/:role/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
-        <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
+        {/* Pour l'admin */}
+        <Route path='/admin/voiture/new' element={<ProtectedRoute allowedRoles={'admin'}><NewCar/></ProtectedRoute>} />
+        <Route path='/admin/utilisateurs' element={<ProtectedRoute allowedRoles={'admin'}><Clients /></ProtectedRoute>} />
+        <Route path = '/admin/voitures' element={<ProtectedRoute allowedRoles={'admin'}><Voiture/></ProtectedRoute>} />
+        <Route path='/admin/voiture/update/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
+        <Route path='/admin/reservation' element={<ProtectedRoute allowedRoles={'admin'}><Reservations /></ProtectedRoute>} />
+        
 
+        <Route path='/client/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
+        <Route path='/client/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
 
         {/* Routes communes */}
         <Route
@@ -63,9 +64,9 @@ function App() {
           <ProtectedRoute allowedRoles={['admin', 'client']}>
             <DashboardContainer />
           </ProtectedRoute> } />
-
+        <Route path='/:role/my/profil/:id' element={<ProtectedRoute allowedRoles={['client', 'admin']}><Profil /></ProtectedRoute>} />
         <Route path='/:role/models' element={<ProtectedRoute allowedRoles={['client', 'admin']}><Interface /></ProtectedRoute>} />
-        <Route path='/deconnexion' element={<ProtectedRoute><Deconnexion /></ProtectedRoute>} />
+        <Route path='/deconnexion' element={<ProtectedRoute allowedRoles={['client', 'admin']}><Deconnexion /></ProtectedRoute>} />
 
       </Routes>
     <FooterSection />

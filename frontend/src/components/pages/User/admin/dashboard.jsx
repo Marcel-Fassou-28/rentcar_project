@@ -7,6 +7,7 @@ import RevenuChart from "./composants/RevenuChart";
 import EtatCarChar from "./composants/EtatCarChar";
 import HistoriqueReservations from "./composants/HistoriqueReservations";
 import Sidebar from "./composants/Sidebar";
+
 const Dashboard = () => {
   const calendar = [
     {
@@ -58,7 +59,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="pt-16 bg-gray-100 flex">
+    <div className="pt-16 bg-gradient-to-b from-gray-50 to-gray-100 flex">
 
       <Sidebar/>
       <div className=" ">

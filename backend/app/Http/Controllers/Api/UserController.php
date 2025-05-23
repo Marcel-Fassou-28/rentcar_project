@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\Client;
 use App\Models\Note;
@@ -228,6 +229,93 @@ class UserController extends Controller
             Log::error('Erreur lors du téléchargement de la photo de profil Google: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'telephone', 'birthday', 'photo', 'email', 'adresse')
+            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
+            ->where('utilisateurs.id', $id)
+            ->where('role', 'client')
+            ->groupBy('utilisateurs.id')
+            ->first();
+
+        $photoUrl = $client->photo && Storage::disk('public')->exists('profil/' . $client->photo)
+            ? url('storage/profil/' . $client->photo)
+            : null;
+        $client->photo = $photoUrl;
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $client
+        ], 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateProfileRequest $request, string $id)
+    {
+        $validated = $request->validated();
+        $utilisateur = Utilisateur::where('id', $id)
+            ->where('role', 'client')
+            ->firstOrFail();
+        
+        if ($request->has('photo') && $request->photo['name'] && $request->photo['data']) {
+                $photoData = $request->photo['data'];
+                if (!preg_match('/^data:image\/(jpeg|png|jpg);base64,(.+)$/', $photoData, $matches)) {
+                    return response()->json([
+                        'message' => 'Format d\'image invalide',
+                    ], 422);
+                }
+                $mimeType = $matches[1]; 
+                $base64Data = $matches[2]; 
+
+                $imageData = base64_decode($base64Data);
+                if ($imageData === false) {
+                    return response()->json([
+                        'message' => 'Erreur lors du décodage de l\'image',
+                    ], 422);
+                };
+
+                if (strlen($imageData) > 2 * 1024 * 1024) {
+                    return response()->json([
+                        'message' => 'L\'image ne doit pas dépasser 2 Mo.',
+                    ], 422);
+                };
+
+                $fileName = 'profil_' . time() . '_' . Str::random(16) . '.' . pathinfo(pathinfo($request->photo['name'], PATHINFO_BASENAME), PATHINFO_EXTENSION);
+                $filePath = 'profil/' . $fileName;
+                Storage::disk('public')->put($filePath, $imageData);
+                if ($utilisateur->photo && Storage::disk('public')->exists('profil/' . $utilisateur->photo) && $utilisateur->photo != 'avatar.png') {
+                    Storage::disk('public')->delete('profil/' . $utilisateur->photo);
+                }
+            }
+        $utilisateur->update([
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'email' => $validated['email'],
+            'birthay' => $validated['birthday'],
+            'adresse' => $validated['adresse'],
+            'telephone' => $validated['telephone'],
+            'photo' => $fileName ?? $utilisateur->photo,
+        ]);
+
+        $utilisateur = Utilisateur::where('id', $id)
+            ->where('role', 'client')
+            ->firstOrFail();
+        $photoUrl = $utilisateur->photo && Storage::disk('public')->exists('profil/' . $utilisateur->photo)
+            ? url('storage/profil/' . $utilisateur->photo)
+            : null;
+        $utilisateur->photo = $photoUrl;
+        return response()->json([
+            'success' => true,
+            'message' => 'Client mis à jour avec succès',
+            'data' => $utilisateur,
+        ], 200);
     }
 }
 

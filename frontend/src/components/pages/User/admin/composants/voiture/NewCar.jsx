@@ -16,7 +16,7 @@ const NewCar = () => {
     <div className="flex  pt-16 ">
       <Sidebar />
       <div className=" mb-4 flex flex-[4] flex-col items-center ">
-        <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 ">
+        <div className="flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 ">
             <img src={carPhoto} alt="photo voiture" />
           <div className="flex flex-col flex-wrap gap-4">
             <h1 className="text-2xl font-bold">Infos</h1>
@@ -49,7 +49,7 @@ const NewCar = () => {
         </div>
         <form
           method="post"
-          className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 "
+          className=" flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 "
         >
             <div className="w-full flex flex-col gap-2">
                 <label htmlFor="car_name">Nom de la voiture <span className="text-red-600">*</span></label>

@@ -152,6 +152,7 @@ const Navbar = () => {
             >
               <UserCircle className="w-4 h-4 mr-1.5" />
               <span className="hidden lg:inline">Connexion</span>
+              
             </Link>
             <Link
               to="/register"
