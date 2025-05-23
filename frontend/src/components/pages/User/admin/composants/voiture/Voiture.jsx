@@ -17,6 +17,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Link } from "react-router-dom";
+import { CarFront } from "lucide-react";
 
 const Voiture = () => {
   const [voitures, setVoitures] = useState([]);
@@ -168,16 +169,26 @@ const Voiture = () => {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className="flex  pt-16">
+    <div className="flex  pt-16 bg-gradient-to-b from-gray-50 to-gray-100">
       <Sidebar />
       <div className="flex flex-[4]  flex-col items-center  ">
-        <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-5 w-[90%]  lg:w-[98%] ">
-          <h2 className="text-2xl   text-gray-500">Les Voitures</h2>
-          <Link className="text-white hover:bg-orange-500 text-2xl bg-orange-500 p-2 rounded-md  " to="/admin/voitures/new">
-            {" "}
-            ajouter une voiture
-          </Link>
-        </div>
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Les Voitures</h1>
+                <p className="text-orange-100">Gérer vos voitures en toute sécurité</p>
+              </div>
+              <div className="mt-4 md:mt-0 flex items-center">
+                <div className="bg-white text-orange-600 p-2 rounded-full">
+                  <CarFront size={24} />
+                </div>
+                <button className="ml-4 bg-white/20 hover:bg-white/30 transition duration-300 text-white px-4 py-2 rounded-lg">
+                  <Link to="/admin/voitures/new">Ajouter une voiture</Link>
+                </button>
+              </div>
+            </div>
+          </div>
+
         <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%]  lg:w-[95%] ">
           <h2 className="text-2xl  m-4 text-gray-500">Les Voitures</h2>
 

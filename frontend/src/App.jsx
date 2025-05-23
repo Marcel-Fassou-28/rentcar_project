@@ -24,6 +24,7 @@ import DeleteCar from './components/pages/User/admin/composants/voiture/DeleteCa
 {/* Routes Pour clients */}
 import MesReservations from './components/pages/User/client/MesReservations'
 import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
+import Setting from './components/pages/User/client/Settings'
 
 {/* Portected Routes */}
 import Deconnexion from './components/pages/Deconnexion'
@@ -74,6 +75,7 @@ function App() {
         {/* Routes client sécurisées */}
         <Route path='/client/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
         <Route path='/client/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
+        <Route path='/client/settings/:id' element={<ProtectedRoute allowedRoles={'client'}><Setting /></ProtectedRoute>} />
 
         {/* Routes communes */}
         <Route

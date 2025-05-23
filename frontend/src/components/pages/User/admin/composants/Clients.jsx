@@ -1,26 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import instance from "../../../../config/Axios";
-
-import {
-  ChevronDown,
-  Users,
-  Calendar,
-  Mail,
-  Search,
-  BarChart,
-  PieChart,
-} from "lucide-react";
-import {
-  BarChart as ReBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { PieChart as RePieChart, Pie, Cell, Legend } from "recharts";
+import {Users, Calendar, BarChart,User2Icon } from "lucide-react";
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -60,23 +41,29 @@ const Clients = () => {
   };
 
   return (
-    <div className="flex pt-16">
+    <div className="flex pt-16 bg-gradient-to-b from-gray-50 to-gray-100">
       <Sidebar />
-      <div className="w-[85%]">
-        <div className="flex flex-col items-center">
+      <div className="w-full">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Les Clients</h1>
+                <p className="text-orange-100">Gérer vos clients en toute sécurité</p>
+              </div>
+              <div className="mt-4 md:mt-0 flex items-center">
+                <div className="bg-white text-orange-600 p-2 rounded-full">
+                  <User2Icon size={24} />
+                </div>
+              </div>
+            </div>
+          </div>
+        <div className="flex flex-col items-center mx-auto my-4 w-[95%]">
           <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
-            <h2 className="text-2xl  m-4 text-gray-500">Les Clients</h2>
-
             <div className="bg-gray-100  p-4">
               <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">
-                  Dashboard des Clients
-                </h1>
-
-             
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-white rounded-lg shadow p-6 flex items-center">
-                    <div className="rounded-full bg-blue-100 p-3 mr-4">
+                    <div className="rounded-full bg-gray-100 p-3 mr-4">
                       <Users className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
@@ -93,7 +80,7 @@ const Clients = () => {
                     </div>
                     <div>
                       <h2 className="text-sm font-medium text-gray-500">
-                        nombre de clients ayant une reservation
+                        Nombre de clients ayant une reservation
                       </h2>
                       <p className="text-2xl font-semibold">
                         {reservationClient.length}
