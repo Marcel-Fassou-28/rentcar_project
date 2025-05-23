@@ -54,6 +54,13 @@ const Reservations = () => {
     });
   }
 }, [reservations]);
+
+
+// var sortedReservations = reservations.sort((a, b) => {
+//   const statusPriority = {"en attente": 1, "en cours": 2, "payé": 3,   "expiré": 4 };
+//   return statusPriority[a.statut] - statusPriority[b.statut];
+// });
+
   const updateReservation = (id, etat) => {
     instance
       .patch(`/admin/reservations/update/${id}`, { statut: etat })
@@ -81,6 +88,37 @@ const Reservations = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
+
+
+  const [status, setStatus] = useState("all");
+
+  const handleChange = (e) => {
+    setStatus(e.target.value);
+  }
+
+  console.log(reservations)
+
+const [sortedReservations, setSortedReservations] = useState(reservations);
+
+useEffect(() => {
+  setSortedReservations(reservations);
+}, [reservations]);
+
+console.log(sortedReservations)
+const handleSearch = (e) => {
+    e.preventDefault();
+    if (status === "all") {
+      setSortedReservations(reservations);
+      return;
+    }
+    else{
+
+    let filteredReservations = reservations.filter((r) => r.statut === status);
+
+    setSortedReservations(filteredReservations); // ✅ Mise à jour correcte
+    console.log(status);
+    }
+};
 
   const getStatusColor = (statut) => {
     switch (statut) {
@@ -183,7 +221,22 @@ const Reservations = () => {
 
           <div className=" w-[80%] lg:w-full bg-white rounded-xl shadow-lg border border-gray-100">
             <div className=" overflow-x-auto">
-              <table className=" min-w-full ">
+              <form action="" onSubmit={handleSearch}  className="flex items-center gap-4 px-4 py-4">
+                <div className="flex flex-[1] flex-col gap-2 p-2">
+                <label htmlFor="">Statut</label>
+                <select name="status" id="" 
+                onChange={handleChange}
+                className="border rounded-full p-2 py-1 px-4 focus:outline-none transition-all duration-300 focus:border-gray-500">
+                  <option value="all" className="">Toutes</option>
+                  <option value="en cours">En cours</option>
+                  <option value="payé">Payées</option>
+                  <option value="en attente">En attente</option>
+                  <option value="expiré">Expirees</option>
+                </select>
+                </div>
+                <button type="submit" className=" flex-1 bg-orange-500 text-white px-4 py-2 rounded">Trier</button>
+              </form>
+              {sortedReservations.length > 0 ? <table className=" min-w-full ">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
@@ -213,7 +266,7 @@ const Reservations = () => {
                   </tr>
                 </thead>
                 <tbody className="">
-                  {reservations.map((reservation) => (
+                  {sortedReservations.map((reservation) => (
                     console.log(reservation),
                     reservation.client.nom && (<tr
                       key={reservation.id}
@@ -303,7 +356,13 @@ const Reservations = () => {
                     </tr>
                   )))}
                 </tbody>
-              </table>
+              </table> : 
+              <div className="text-center py-10">
+              <Car className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+              <p className="text-gray-500 text-lg">Aucune réservation trouvée.
+              <span className="text-center text-orange-400"> {status ? " statut: " + status : ""}</span></p>
+            </div>
+}
             </div>
           </div>
         </div>

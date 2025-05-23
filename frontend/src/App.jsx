@@ -29,7 +29,9 @@ import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
 import Deconnexion from './components/pages/Deconnexion'
 import DashboardContainer from './components/pages/User/DashboardContainer'
 import Profil from './components/pages/User/Profil'
-import Reservations from './components/pages/User/admin/composants/Reservation'
+
+
+import Reservations from './components/pages/User/admin/composants/Reservations/Reservations'
 
 
 
@@ -50,7 +52,7 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword />} />
         
 
-        <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
+        {/* <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} /> */}
 
         {/* Routes admin (à adapter si nécessaire) */}
         
@@ -64,7 +66,7 @@ function App() {
         <Route path='/admin/voiture/update/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} /> 
         <Route path='/:role/voitures/modifyCar/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
         <Route path='/:role/voitures/delete/:id' element={<ProtectedRoute allowedRoles={'admin'}><DeleteCar /></ProtectedRoute>} />
-        
+
         <Route path='/admin/utilisateurs' element={<ProtectedRoute allowedRoles={'admin'}><Clients /></ProtectedRoute>} />
         <Route path='/admin/reservation' element={<ProtectedRoute allowedRoles={'admin'}><Reservations /></ProtectedRoute>} />
 
