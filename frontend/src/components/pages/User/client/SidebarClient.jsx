@@ -1,18 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  User, 
-  Car, 
-  Calendar, 
-  Home, 
-  Bell, 
-  LogOut, 
-  Settings,
-  ChevronRight,
-  Menu,
-  X
-} from 'lucide-react';
+import { User, Car, Calendar, Home, Bell, LogOut, Settings,ChevronRight,Menu,X} from 'lucide-react';
 
 const SidebarClient = () => {
   const location = useLocation();
@@ -46,7 +35,7 @@ const menuItems = [
   { name: 'Mes Réservations', icon: <Calendar size={20} />, path: `/${parsedUser.role}/reservation` },
   { name: 'Réserver une Voiture', icon: <Car size={20} />, path: `/${parsedUser.role}/reserver` },
   { name: 'Mon Profil', icon: <User size={20} />, path: `/${parsedUser.role}/my/profil/${parsedUser.id}` },
-  { name: 'Paramètres', icon: <Settings size={20} />, path: `/${parsedUser.role}/settings/${parsedUser.id}` },
+  { name: 'Paramètres', icon: <Settings size={20} />, path: `/client/settings/${parsedUser.id}` },
 ];
 
 

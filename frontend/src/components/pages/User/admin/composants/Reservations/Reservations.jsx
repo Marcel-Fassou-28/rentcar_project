@@ -1,29 +1,16 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../Sidebar";
 import instance from "../../../../../config/Axios";
-import {
-  Calendar,
-  User,
-  Car,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  Download,
-} from "lucide-react";
+import {Calendar, User, Car} from "lucide-react";
 import CheckIcon from '@mui/icons-material/Check';
 import PaidIcon from '@mui/icons-material/Paid';
 import ClearIcon from '@mui/icons-material/Clear';
-
-
-//
+import StatReservation from "./StatReservation";
+import { motion } from "framer-motion";
 
 const Reservations = () => {
-
-
   const [reservations, setReservations] = useState([]);
   const [load, setLoad] = useState(false);
-
 
   useEffect(() => {
     instance
@@ -34,8 +21,6 @@ const Reservations = () => {
       .catch((err) => {
         console.log(err);
       }); 
-
-      
   }, []);
 
  useEffect(() => {
@@ -53,11 +38,13 @@ const Reservations = () => {
     });
   }
 }, [reservations]);
+
+console.log(reservations);
+
   const updateReservation = (id, etat) => {
     instance
       .patch(`/admin/reservations/update/${id}`, { statut: etat })
       .then((res) => {
-        // navigate("/admin/reservation")
         window.location.reload();
       })
       .catch((err) => { 
@@ -96,119 +83,43 @@ const Reservations = () => {
     }
   };
   return (
-    <div className="flex pt-20">
+    <div className="flex pt-20 bg-gradient-to-b from-gray-50 to-gray-100">
       <Sidebar />
       <div className="w-full    bg-gray-50">
-        <div className=" bg-white shadow-sm border-b mx-8 mt-8">
-          <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-6">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+            <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Dashboard des Réservations
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Gérez et suivez toutes vos réservations
-                </p>
+                <h1 className="text-3xl font-bold mb-2">Dashboard des Réservations</h1>
+                <p className="text-orange-100">Gérer et suivez toutes vos réservations</p>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className=" mx-aut px-4 sm:px-6 lg:px-8 py-8">
-          <div className=" flex flex-wrap  gap-4 md:gap-16 mb-8">
-            <div className=" w-full md:w-[30%] lg:w-[13%] bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total</p>
-                  <p className="text-3xl font-bold text-gray-900">{total}</p>
-                </div>
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-gray-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full md:w-[30%] lg:w-[15%] bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-600">Payées</p>
-                  <p className="text-3xl font-bold text-green-900">{paye}</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className=" w-full md:w-[30%] lg:w-[15%] bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-600">En Cours</p>
-                  <p className="text-3xl font-bold text-blue-900">{enCours}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full md:w-[30%] lg:w-[20%] bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-yellow-600">
-                    En Attente
-                  </p>
-                  <p className="text-3xl font-bold text-yellow-900">
-                    {enAttente}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-yellow-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className=" w-full md:w-[30%] lg:w-[15%] bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-red-600">Expirées</p>
-                  <p className="text-3xl font-bold text-red-900">{expire}</p>
-                </div>
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-red-600" />
+              <div className="mt-4 md:mt-0 flex items-center">
+                <div className="bg-white text-orange-600 p-2 rounded-full">
+                  <Calendar size={24} />
                 </div>
               </div>
             </div>
           </div>
+        <div className=" mx-aut px-4 sm:px-6 lg:px-8 py-4 ">
+          <StatReservation total={total} paye = {paye} enCours = {enCours} enAttente= {enAttente} expire={expire}/>
 
-          <div className=" w-[80%] lg:w-full bg-white rounded-xl shadow-lg border border-gray-100">
+          {/* Table */}
+          <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className=" w-[80%] lg:w-full bg-white rounded-xl shadow-lg border border-gray-100">
             <div className=" overflow-x-auto">
               <table className=" min-w-full ">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      ID
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Client
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Voiture
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Date Début
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Date Fin
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Durée
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                      Statut
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                      Actions
-                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">ID</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Client</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Voiture</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date Début</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900"> Fin</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Durée</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Statut</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="">
@@ -218,9 +129,7 @@ const Reservations = () => {
                       key={reservation.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        #{reservation.id}
-                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">#{reservation?.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
@@ -228,13 +137,9 @@ const Reservations = () => {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              {reservation.client.nom +
-                                " " +
-                                reservation.client.prenom}
+                              {reservation.nom + " " + reservation.prenom}
                             </p>
-                            <p className="text-xs text-gray-500">
-                              ID: {reservation.idClient}
-                            </p>
+                            <p className="text-xs text-gray-500">ID: {reservation.client.idClient}</p>
                           </div>
                         </div>
                       </td>
@@ -244,24 +149,15 @@ const Reservations = () => {
                             <Car className="w-4 h-4 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {reservation.voiture.car_name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              ID: {reservation.idVoiture}
-                            </p>
+                            <p className="text-xs text-gray-500">ID: {reservation.idVoiture}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {new Date(reservation.dateDebut).toLocaleDateString(
-                          "fr-FR"
-                        )}
+                        {new Date(reservation.dateDebut).toLocaleDateString("fr-FR")}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
-                        {new Date(reservation.dateFin).toLocaleDateString(
-                          "fr-FR"
-                        )}
+                        {new Date(reservation.dateFin).toLocaleDateString("fr-FR")}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {calculateDuration(
@@ -304,7 +200,7 @@ const Reservations = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
