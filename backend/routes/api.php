@@ -25,7 +25,8 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
 Route::get('/ressources', [UserController::class, 'home']); // Pour certaine information de l'accueil
-Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les models de voiture
+Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les tous les models de voiture
+ Route::get('voiture/disponible', [VoitureController::class, 'voitureDisponible']); //pour les models de voiture disponible pour une location
 
 Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
@@ -107,6 +108,7 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
         Route::patch('/update/{id}', [VoitureController::class, 'update']);
         Route::delete('/delete/{id}', [VoitureController::class, 'destroy']);
         Route::get('/show/{id}', [VoitureController::class, 'show']);
+       
     });
 
 });

@@ -39,6 +39,36 @@ class VoitureController extends Controller
         }
     }
 
+
+    /**
+     * pour recupere les voitures disponible et afficher aux client dans le page model
+     * @return JsonResponse|mixed
+     */
+    public function voitureDisponible(){
+        $voitures = Voiture::select(
+            'id', 
+            'car_name', 
+            'car_model', 
+            'car_categorie', 
+            'statut', 
+            'car_photo'
+        )
+        ->where('statut', 'disponible')
+            ->get();
+
+        if ($voitures) {
+            return response()->json([
+                'success' => true,
+                'data' => $voitures
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'data' => []
+            ], 200);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */

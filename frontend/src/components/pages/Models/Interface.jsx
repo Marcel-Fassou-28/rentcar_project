@@ -15,8 +15,8 @@ const Interface = () => {
   useEffect(() => {
     const fetchVoitures = async () => {
       try {
-        const response = await instance.get("/voitures");
-
+        const response = await instance.get("/voiture/disponible");
+console.log(response);
         setVoitures(response.data.data);
         setLoading(false);
       } catch (err) {

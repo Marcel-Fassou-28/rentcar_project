@@ -44,7 +44,7 @@ const Reservations = () => {
 //   const statusPriority = {"en attente": 1, "en cours": 2, "payé": 3,   "expiré": 4 };
 //   return statusPriority[a.statut] - statusPriority[b.statut];
 // });
-console.log(reservations);
+
 
   const updateReservation = (id, etat) => {
     instance
@@ -80,7 +80,7 @@ console.log(reservations);
     setStatus(e.target.value);
   }
 
-  console.log(reservations)
+
 
 const [sortedReservations, setSortedReservations] = useState(reservations);
 
@@ -88,7 +88,7 @@ useEffect(() => {
   setSortedReservations(reservations);
 }, [reservations]);
 
-console.log(sortedReservations)
+
 const handleSearch = (e) => {
     e.preventDefault();
     if (status === "all") {
@@ -126,7 +126,7 @@ const handleSearch = (e) => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold mb-2">Dashboard des Réservations</h1>
-                <p className="text-orange-100">Gérer et suivez toutes vos réservations</p>
+                <p className="text-orange-100">Gérer et suivez toutes les réservations</p>
               </div>
               <div className="mt-4 md:mt-0 flex items-center">
                 <div className="bg-white text-orange-600 p-2 rounded-full">
@@ -175,12 +175,12 @@ const handleSearch = (e) => {
                 </thead>
                 <tbody className="">
                   {sortedReservations.map((reservation) => (
-                    console.log(reservation),
+                    
                     reservation.client.nom && (<tr
                       key={reservation.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">#{reservation?.id}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">#{reservation.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
@@ -188,9 +188,9 @@ const handleSearch = (e) => {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              {reservation.nom + " " + reservation.prenom}
+                              {reservation.client.nom + " " + reservation.client.prenom}
                             </p>
-                            <p className="text-xs text-gray-500">ID: {reservation.client.idClient}</p>
+                            <p className="text-xs text-gray-500">ID: {reservation.idClient}</p>
                           </div>
                         </div>
                       </td>
@@ -200,6 +200,9 @@ const handleSearch = (e) => {
                             <Car className="w-4 h-4 text-green-600" />
                           </div>
                           <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {reservation.voiture.car_name}
+                            </p>
                             <p className="text-xs text-gray-500">ID: {reservation.idVoiture}</p>
                           </div>
                         </div>
