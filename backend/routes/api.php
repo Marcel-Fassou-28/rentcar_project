@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\Admin\VoitureController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\VoitureController as ApiVoitureController;
 use App\Http\Controllers\Api\UserController;
+
+
+
 use App\Http\Controllers\Api\ReservationController;
 
 use Illuminate\Support\Facades\Route;
@@ -95,6 +98,7 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
      */
    
     Route::prefix('admin/users')->group(function () {
+        Route::get('/reservation',   [ClientController::class, 'reservationClient']);
         Route::get('/',   [ClientController::class, 'index']);
         Route::delete('/delete/{id}',  [ClientController::class, 'destroy']);
         Route::get('/show/{id}',   [ClientController::class, 'show']);

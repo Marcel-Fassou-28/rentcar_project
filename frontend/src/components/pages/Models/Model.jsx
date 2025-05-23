@@ -3,12 +3,14 @@ import SpeedIcon from '@mui/icons-material/Speed';
 const Model = (props) => {
     
   return (
-    <div className="  pt-16 w-[350px] md:w-[200px] lg:w-[300px] h-auto  rounded-lg m-auto  cursor-pointer pos">
-      <div className="relative"><img
+    <div className=" h-[300px]  w-[350px] md:w-[200px] lg:w-[300px] h-auto  rounded-lg m-auto  cursor-pointer border border-gray-300 px-4 pb-2">
+      <div className="relative">
+        <img
         src={props.voiture.car_photo}
         alt="Voiture"
         className="w-[300px] h-[300px] md:w-[200px] md:h-[200px] lg:w-[300px] lg:h-[300px] m-auto object-cover"
       />
+      <a href="" className='absolute top-0 right-0 my-4  text-white font-bold bg-orange-400 px-4 py-2 rounded'>reserver</a>
       <div className=" absolute right-0 bottom-0 w-60 md:w-45  rounded-tl-[50px] flex justify-between items-center bg-red-400 cursor-pointer text-white   px-4">
         <p className=" font-bold"> A partir de {props.voiture.price}DHS</p>
         <hr className="border border-gray-400 rounded  h-5 my-3  " />

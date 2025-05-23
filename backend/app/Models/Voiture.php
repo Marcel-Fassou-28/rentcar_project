@@ -19,7 +19,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $car_name
  * @property string $car_model
  * @property string $car_categorie
- * @property double $prix
  * @property string $immatriculation
  * @property float $price
  * @property string|null $moteur
@@ -55,7 +54,6 @@ class Voiture extends Model
         'immatriculation',
         'price',
         'statut',
-        'car_photo',
         'moteur',
         'transmission'
         

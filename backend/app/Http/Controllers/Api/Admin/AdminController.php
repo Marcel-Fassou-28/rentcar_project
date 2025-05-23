@@ -18,6 +18,11 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    public function index()
+    {
+        $admins = Utilisateur::where('role', 'admin')->get();
+        return response()->json($admins);
+    }
     // Créer un admin
     public function store(AdminRequest $request)
     {

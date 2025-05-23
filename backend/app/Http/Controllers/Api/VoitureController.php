@@ -15,17 +15,18 @@ class VoitureController extends Controller
     public function index()
     {
         $voitures = Voiture::select(
-            'id', 
-            'car_name', 
-            'car_model', 
+            'id',
+            'car_name',
+            'car_model',
             'car_categorie',
-            'price', 
-            'immatriculation',
-            'statut', 
+            'price',
+            'moteur',
+            'transmission',
+            'statut',
             'car_photo'
         )
             ->get();
-            // ->groupBy('car_categorie');
+        // ->groupBy('car_categorie');
 
         if ($voitures) {
             return response()->json([
@@ -43,7 +44,7 @@ class VoitureController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(VoitureRequest $request)
+    public function store(Request $request)
     {
         $voiture = Voiture::create($request->validated());
 

@@ -170,15 +170,15 @@ const Voiture = () => {
   return (
     <div className="flex  pt-16">
       <Sidebar />
-      <div className="flex flex-[4] flex-col items-center ">
+      <div className="flex flex-[4]  flex-col items-center  ">
         <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-5 w-[90%]  lg:w-[98%] ">
           <h2 className="text-2xl   text-gray-500">Les Voitures</h2>
-          <Link className="text-blue-500 text-2xl   " to="/new">
+          <Link className="text-white hover:bg-orange-500 text-2xl bg-orange-500 p-2 rounded-md  " to="/admin/voitures/new">
             {" "}
             ajouter une voiture
           </Link>
         </div>
-        <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%]  lg:w-[98%] ">
+        <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%]  lg:w-[95%] ">
           <h2 className="text-2xl  m-4 text-gray-500">Les Voitures</h2>
 
           <Paper
@@ -192,29 +192,7 @@ const Voiture = () => {
               initialState={{ pagination: { paginationModel } }}
               pageSizeOptions={[10]}
               checkboxSelection
-              // onSelectionModelChange={(selection) => {
-              //   setValues((prevValues) =>
-              //     selection
-              //       .map((id) => (prevValues.includes(id) ? id : null))
-              //       .filter(Boolean)
-              //   );
-              //   console.log(values);
-              // }}
-              // onRowSelectionModelChange={(params) => {
-              //   setValues((values) => {
-              //     const newValues = [...values, params.row.id];
-              //     console.log(newValues);
-              //     return newValues;
-              //   });
-              // }}
-              // onCellClick={(params) => {
-              //   setValues((values) => {
-              //     const newValues = [...values, params.row.id];
-              //     console.log(newValues);
-              //     return newValues;
-              //   });
-
-              // }}
+             
 
               onCellClick={(params) => {
                 setValues((values) => {
@@ -233,33 +211,33 @@ const Voiture = () => {
               }}
               sx={{ border: 0 }}
             />
-          
-          </Paper>
           {console.log(values)}
+          </Paper>
           {values.length > 0 && (
             <div className="flex gap-4 justify-center">
-              <a href="/deleteCar" className="m-4 bg-red-500 p-2 rounded-md">
+              <a href={`voitures/delete/${values[0]}`} className="m-4 bg-red-500 p-2 rounded-md">
                 Supprimer
               </a>
 
               {values.length < 2 && (
                 <a
-                  href={`/modifyCar/${values}`}
+                  href={`voitures/modifyCar/${values[0]}`}
                   className="m-4 bg-blue-500 p-2 rounded-md"
                 >
                   {" "}
+                 
                   Modifier
                 </a>
               )}
             </div>
           )}
         </div>
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col lg:flex-row items-center w-full lg:w-[95%]">
           <div className=" shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
             <h2 className="text-2xl  m-4 text-gray-500">Etats Des Voitures</h2>
 
             <Paper className="flex justify-center items-center w-full">
-              <ResponsiveContainer width="80%" height={270} className="my-4">
+              <ResponsiveContainer width="80%" height={300} className="my-4">
                 <PieChart width={500} height={500}>
                   <Pie
                     data={stateCar}
@@ -287,8 +265,8 @@ const Voiture = () => {
               Voitures par Categorie
             </h2>
             <Paper className="flex justify-center items-center w-full">
-              <ResponsiveContainer width="90%" height={400}>
-                <BarChart width={700} height={250} data={category}>
+              <ResponsiveContainer width="90%" height={300}>
+                <BarChart width={700} height={300} data={category}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />

@@ -14,11 +14,12 @@ import Interface from './components/pages/Models/interface'
 import About from './components/pages/About'
 
 {/* ROutes pour administrateurs */}
-import Reservations from './components/pages/User/admin/composants/Reservations'
+
 import Clients from './components/pages/User/admin/composants/Clients'
 import Voiture from './components/pages/User/admin/composants/voiture/Voiture'
 import NewCar from './components/pages/User/admin/composants/voiture/NewCar'
 import ModifierCar from './components/pages/User/admin/composants/voiture/ModifierCar'
+import DeleteCar from './components/pages/User/admin/composants/voiture/DeleteCar'
 
 {/* Routes Pour clients */}
 import MesReservations from './components/pages/User/client/MesReservations'
@@ -28,6 +29,8 @@ import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
 import Deconnexion from './components/pages/Deconnexion'
 import DashboardContainer from './components/pages/User/DashboardContainer'
 import Profil from './components/pages/User/Profil'
+import Reservations from './components/pages/User/admin/composants/Reservation'
+
 
 
 
@@ -47,13 +50,16 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword />} />
         
         {/* Pour l'admin */}
-        <Route path='/admin/voiture/new' element={<ProtectedRoute allowedRoles={'admin'}><NewCar/></ProtectedRoute>} />
+        <Route path='/admin/voitures/new' element={<ProtectedRoute allowedRoles={'admin'}><NewCar/></ProtectedRoute>} />
         <Route path='/admin/utilisateurs' element={<ProtectedRoute allowedRoles={'admin'}><Clients /></ProtectedRoute>} />
         <Route path = '/admin/voitures' element={<ProtectedRoute allowedRoles={'admin'}><Voiture/></ProtectedRoute>} />
         <Route path='/admin/voiture/update/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
         <Route path='/admin/reservation' element={<ProtectedRoute allowedRoles={'admin'}><Reservations /></ProtectedRoute>} />
-        
+        <Route path='/:role/voitures/modifyCar/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
+        <Route path='/:role/voitures/delete/:id' element={<ProtectedRoute allowedRoles={'admin'}><DeleteCar /></ProtectedRoute>} />
 
+
+        {/* Routes client sécurisées */}
         <Route path='/client/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
         <Route path='/client/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
 

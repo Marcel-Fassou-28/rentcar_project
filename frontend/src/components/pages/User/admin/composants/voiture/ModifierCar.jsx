@@ -1,81 +1,202 @@
 import Sidebar from "../Sidebar";
-import { useState } from "react";
-
+import instance from "../../../../../config/Axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { s } from "framer-motion/client";
 
 const ModifierCar = () => {
-        const [brand, setBrand] = useState("");
-  const [immatriculation, setImmatriculation] = useState("");
-  const [carName, setCarName] = useState("");
-  const [model, setModel] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [transmission, setTransmission] = useState("");
-  const [moteur, setMoteur] = useState("");
+  const models = [
+    "Série 3",
+    "X5",
+    "X3",
+    "Série 1",
+    "M4",
+    "Classe C",
+    "GLC",
+    "Classe A",
+    "AMG GT",
+    "GLE",
+    "A3",
+    "A4",
+    "Q5",
+    "RS6",
+    "Q7",
+    "Yaris",
+    "Corolla",
+    "RAV4",
+    "Land Cruiser",
+    "CH-R",
+    "Civic",
+    "CR-V",
+    "Jazz",
+    "HR-V",
+    "e:Ny1",
+  ];
+
+  const [formData, setFormData] = useState({
+    immatriculation: "",
+    brand: "",
+    car_model: "",
+    car_categorie: "",
+    price: 0,
+    transmission: "",
+    moteur: "",
+    car_photo: "",
+    car_name: "",
+    statut: "",
+  });
+
+  const [error, setError] = useState("");
+  let state = 0;
+  formData.brand = formData.brand
+    ? formData.brand
+    : formData.car_name
+    ? formData.car_name.split("-")[0]
+    : "";
+  formData.car_name = formData.brand + "-" + formData.car_model;
+
+  const navigate = useNavigate();
+
   const [carPhoto, setCarPhoto] = useState(null);
+  const { id } = useParams();
+
+  useEffect(() => {
+    instance
+      .get(`/admin/voitures/show/${id}`)
+      .then((res) => {
+        setFormData(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      formData.car_photo = carPhoto ? carPhoto : formData.car_photo;
+      formData.price = parseInt(formData.price);
+
+      const response = await instance.patch(
+        `/admin/voitures/update/${id}`,
+        formData
+      );
+     
+
+      if (response.data) {
+        state = 1;
+
+
+        navigate("/admin/voitures");
+      ;
+      } else {
+        state = 2;
+      }
+    } catch (err) {
+      console.log(err);
+      setError(
+        err.response?.data?.errors.message || "Une erreur est survenue."
+      );
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex  pt-16 ">
       <Sidebar />
-      <div className=" mb-4 flex flex-[4] flex-col items-center ">
-        <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 ">
-            <img src={carPhoto} alt="photo voiture" />
-          <div className="flex flex-col flex-wrap gap-4">
-            <h1 className="text-2xl font-bold">Infos</h1>
-            <p>
-              <strong>Immatriculation :</strong> {immatriculation}
-            </p>
-            <p>
-              <strong>Nom de la voiture :</strong> {carName}
-            </p>
-            <p>
-              <strong>Marque :</strong> {brand}
-            </p>
-            <p>
-              <strong>Modèle :</strong> {model}
-            </p>
-            <p>
-              <strong>Catégorie :</strong> {category}
-            </p>
-            <p>
-              <strong>Moteur :</strong> {moteur}
-            </p>
-            <p>
-              <strong>Transmission :</strong> {transmission}
-            </p>
-            <p>
-              <strong>Prix :</strong> {price}
+
+      <div className=" mb-4  flex-[4] flex-col items-center lg:flex-row ">
+       
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%] md:w-[80%] lg:w-[97%] lg:mx-auto  ">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+            <h1 className="text-3xl font-bold mb-2">Modifier la  Voiture </h1>
+            <p className="text-orange-100">
+              Vueiller modifiere les informations de la voiture dans le
+              formulaire ci dessous
             </p>
           </div>
-          
         </div>
-        <form
+         <div className="  flex flex-col lg:flex-row  gap-4 ">
+        {formData.car_photo &&(
+          <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[45%] lg:mx-4 lg:flex-col  rounded flex gap-4 p-8  lg:mt-6 mt-2 ">
+            <img
+              src={formData.car_photo}
+              alt="photo voiture"
+              className="w-[300px] h-[300px] m-auto object-cover"
+            />
+            <div className="flex flex-col flex-wrap gap-4">
+              <h1 className="text-2xl font-bold">Infos</h1>
+              <p>
+                <strong>Immatriculation :</strong> {formData.immatriculation}
+              </p>
+              <p>
+                <strong>Nom de la voiture :</strong> {formData.car_name}
+              </p>
+              <p>
+                <strong>Marque :</strong> {formData.brand}
+              </p>
+              <p>
+                <strong>Modèle :</strong> {formData.car_model}
+              </p>
+              <p>
+                <strong>Catégorie :</strong> {formData.car_categorie}
+              </p>
+              <p>
+                <strong>Moteur :</strong> {formData.moteur}
+              </p>
+              <p>
+                <strong>Transmission :</strong> {formData.transmission}
+              </p>
+              <p>
+                <strong>Prix :</strong> {formData.price}
+              </p>
+            </div>
+          </div>
+        )}
+         <form
           method="post"
-          className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 mt-16 border border-orange-600 "
+          onSubmit={handleSubmit}
+          className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 lg:mx-auto mt-16  "
         >
-            <div className="w-full flex flex-col gap-2">
-                <label htmlFor="car_name">Nom de la voiture <span className="text-red-600">*</span></label>
-                 <input type="text" name="car_name" placeholder="Nom de la voiture"
-                 onChange={() => setCarName(event.target.value)}
-                 className="px-2 w-full py-2 font-light text-gray-400 border" required /> 
+          {error && (
+            <div className="text-red-600 text-center">
+              <p>{error}</p>
             </div>
+          )}
 
-            <div className="w-full flex flex-col gap-2">
-                <label htmlFor="immatriculation">Immatriculation de la voiture <span className="text-red-600">*</span></label>
-                <input type="text" name="immatriculation" placeholder="Immatriculation de la voiture"
-                onChange={()=> setImmatriculation(event.target.value)}
-                required
-                className="px-2 w-full flex flex-wrap py-2 font-light text-gray-400 border" />
-            </div>
-           
-             <div className="w-full flex flex-col gap-2">
-            <label>Marque<span className="text-red-600">*</span> :</label>
-            <select
-              value={brand}
+          <div className="w-full flex flex-col gap-2">
+            <label htmlFor="immatriculation">
+              Immatriculation de la voiture{" "}
+              <span className="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              name="immatriculation"
+              value={formData.immatriculation}
+              placeholder="Immatriculation de la voiture"
+              onChange={handleChange}
               required
-              onChange={(e) => setBrand(e.target.value)}
+              className="px-2 w-full flex flex-wrap py-2 font-light text-gray-400 border"
+            />
+          </div>
+
+          <div className="w-full flex flex-col gap-2">
+            <label>
+              Marque<span className="text-red-600">*</span> :
+            </label>
+            <select
+              name="brand"
+              value={formData.brand}
+              required
+              onChange={handleChange}
               className="px-2 w-full py-2 font-light text-gray-400 border"
             >
               <option value="">Sélectionner une marque</option>
+
               <option value="BMW">BMW</option>
               <option value="Mercedes">Mercedes</option>
               <option value="Audi">Audi</option>
@@ -85,29 +206,41 @@ const ModifierCar = () => {
           </div>
 
           <div className="w-full flex flex-col gap-2">
-            <label>Modèle<span className="text-red-600">*</span> :</label>
+            <label>
+              Modèle<span className="text-red-600">*</span> :
+            </label>
             <select
-              value={model}
+              value={formData.car_model}
+              name="car_model"
               required
-              onChange={(e) => setModel(e.target.value)}
+              onChange={handleChange}
               className="px-2 w-full py-2 font-light text-gray-400 border"
             >
               <option value="">Sélectionner un modèle</option>
-              <option value="Série 3">Série 3</option>
-              <option value="X5">X5</option>
-              <option value="Classe C">Classe C</option>
-              <option value="A4">A4</option>
-              <option value="RAV4">RAV4</option>
-              <option value="Civic">Civic</option>
+              {models.map((model) => (
+                <option key={model}>{model}</option>
+              ))}
             </select>
           </div>
 
+          {/* <div className="w-full flex flex-col gap-2">
+                <label htmlFor="car_name">Nom de la voiture <span className="text-red-600">*</span></label>
+                 <input type="text" name="car_name" placeholder="Nom de la voiture Marque-Modèle"
+                 required
+                 
+                 onChange={handleChange}
+                 className="px-2 w-full py-2 font-light text-gray-400 border" /> 
+            </div> */}
+
           <div className="w-full flex flex-col gap-2">
-            <label>Catégorie<span className="text-red-600">*</span> :</label>
+            <label>
+              Catégorie<span className="text-red-600">*</span> :
+            </label>
             <select
-            required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              required
+              value={formData.car_categorie}
+              name="car_categorie"
+              onChange={handleChange}
               className="px-2 w-full py-2 font-light text-gray-400 border"
             >
               <option value="">Sélectionner une catégorie</option>
@@ -122,9 +255,10 @@ const ModifierCar = () => {
           <div className="w-full flex flex-col gap-2">
             <label>Moteur :</label>
             <select
-            required
-              value={moteur}
-              onChange={(e) => setMoteur(e.target.value)}
+              required
+              name="moteur"
+              value={formData.moteur}
+              onChange={handleChange}
               className="px-2 w-full py-2 font-light text-gray-400 border"
             >
               <option value="">Sélectionner un moteur</option>
@@ -138,9 +272,10 @@ const ModifierCar = () => {
           <div className="w-full flex flex-col gap-2">
             <label>Transmission :</label>
             <select
-            required
-              value={transmission}
-              onChange={(e) => setTransmission(e.target.value)}
+              required
+              name="transmission"
+              value={formData.transmission}
+              onChange={handleChange}
               className="px-2 w-full py-2 font-light text-gray-400 border"
             >
               <option value="">Sélectionner une transmission</option>
@@ -150,12 +285,13 @@ const ModifierCar = () => {
           </div>
 
           <div className="w-full flex flex-col gap-2">
-            <label >Prix :</label>
+            <label>Prix :</label>
             <input
-            required
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              required
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
               placeholder="Prix de la voiture"
               className="px-2 w-full py-2 font-light text-gray-400 border"
             />
@@ -163,8 +299,8 @@ const ModifierCar = () => {
           <div className="w-full flex flex-col gap-2">
             <label>Photo :</label>
             <input
-            required
               type="file"
+              name="car_photo"
               onChange={(event) => {
                 if (event.target.files && event.target.files[0]) {
                   setCarPhoto(URL.createObjectURL(event.target.files[0]));
@@ -182,10 +318,10 @@ const ModifierCar = () => {
             </button>
           </div>
         </form>
-          
+      </div>
       </div>
     </div>
   );
-}
+};
 
-export default ModifierCar
+export default ModifierCar;
