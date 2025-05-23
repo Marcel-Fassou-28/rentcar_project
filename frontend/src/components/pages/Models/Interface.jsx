@@ -107,7 +107,7 @@ const Interface = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap   pb-12 mx-4  lg:mx-64   md:gap-1">
+          <div className="flex flex-wrap   pb-12 mx-4 mt-6  lg:mx-32   md:gap-1 lg:gap-4">
             {voitures.map((voiture) => {
               return <Model voiture={voiture} key={voiture.nom} />;
             })}

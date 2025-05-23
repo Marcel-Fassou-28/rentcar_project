@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Utilisateur;
 use App\Models\Client;
@@ -19,7 +21,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'telephone', 'photo') //'clients.permisConduire')
+        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'telephone','created_at', 'photo','clients.permisConduire')
             //->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('role', 'client')
             ->get();
@@ -72,15 +74,38 @@ class ClientController extends Controller
         ], 201);
     }
 
+    public function reservationClient() {
+
+        $clients = Utilisateur::select(
+            'utilisateurs.id', 
+            'utilisateurs.nom', 
+            'utilisateurs.prenom', 
+            'utilisateurs.email', 
+            'utilisateurs.birthday', 
+            'utilisateurs.adresse', 
+            'utilisateurs.telephone') //'clients.permisConduire')
+            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
+            ->join('reservations', 'clients.id', '=', 'reservations.idClient')
+            ->where('utilisateurs.role', 'client')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $clients
+        ], 200);
+
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthay', 'adresse', 'telephone', 'photo', 'clients.permisConduire')
+        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone', 'photo', 'clients.permisConduire')
             ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('utilisateurs.id', $id)
             ->where('role', 'client')
+            ->groupBy('utilisateurs.id')
             ->firstOrFail();
 
         return response()->json([

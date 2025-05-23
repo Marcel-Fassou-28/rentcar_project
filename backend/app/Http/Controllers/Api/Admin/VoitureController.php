@@ -43,13 +43,29 @@ class VoitureController extends Controller
      */
     public function store(VoitureRequest $request)
     {
-        $voiture = Voiture::create($request->validated());
+        // 
+        
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Voiture créée avec succès',
-            'data' => $voiture
-        ], 201);
+        try {
+        $voiture = new Voiture();
+        $voiture->car_name = $request->car_name;
+        $voiture->immatriculation = $request->immatriculation;
+        $voiture->car_model = $request->car_model;
+        $voiture->car_categorie = $request->car_categorie;
+        $voiture->price = $request->price;
+        $voiture->statut = $request->statut;
+        $voiture->transmission = $request->transmission;
+        $voiture->moteur = $request->moteur;
+        $voiture->car_photo = $request->car_photo;
+
+
+
+        $voiture->save();
+
+        return response()->json(['message' => 'Voiture ajoutée avec succès !'], 201);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
     }
 
     /**
@@ -86,7 +102,7 @@ class VoitureController extends Controller
      */
     public function show(string $id)
     {
-        $voiture = Voiture::select('id', 'car_name', 'car_model', 'car_categorie', 'immatriculation', 'statut', 'car_photo')
+        $voiture = Voiture::select('id', 'car_name', 'car_model', 'car_categorie', 'immatriculation', 'statut', 'transmission', 'moteur', 'price', 'car_photo')
             ->findOrFail($id);
 
         return response()->json([

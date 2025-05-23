@@ -30,6 +30,10 @@ class VoitureRequest extends FormRequest
             'car_name' => ['required', 'string', 'max:100'],
             'car_model' => ['required', 'string', 'max:100'],
             'car_categorie' => ['required', 'string', 'in:SUV,berline,citadine,luxe,compact,4x4'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'moteur' => ['nullable', 'string', 'max:50'],
+            'transmission' => ['nullable', 'string', 'max:50'],
+            
             'immatriculation' => ['required', 'string', 'max:100', 'unique:voitures,immatriculation,' . $id],
             'statut' => ['required', 'string', 'in:reservé,disponible,loué'],
             'car_photo' => ['nullable', 'string', 'max:250'],
