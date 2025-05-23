@@ -13,14 +13,15 @@ import {
 } from "lucide-react";
 import CheckIcon from '@mui/icons-material/Check';
 import PaidIcon from '@mui/icons-material/Paid';
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from '@mui/icons-material/Clear'; 
 
 
 //
 
 const Reservations = () => {
 
-
+  console.log(localStorage.getItem("role"));
+  console.log("reserve");
   const [reservations, setReservations] = useState([]);
   const [load, setLoad] = useState(false);
 

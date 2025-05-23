@@ -53,19 +53,18 @@ function App() {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         
-        <Route path='/:role/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
-        <Route path='/:role/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
+
         <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
 
         {/* Routes admin (à adapter si nécessaire) */}
         
-        <Route path='/:role/dashboard/:id/:name' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path='/:role/reservation' element={<ProtectedRoute><Reservations /></ProtectedRoute>} />
-        <Route path='/:role/utilisateurs' element={<ProtectedRoute><Clients /></ProtectedRoute>} />
-        <Route path='/:role/voitures' element={<ProtectedRoute><Voiture /></ProtectedRoute>} />
-        <Route path='/:role/voitures/new' element={<ProtectedRoute><NewCar /></ProtectedRoute>} />
-        <Route path='/:role/voitures/modifyCar/:id' element={<ProtectedRoute><ModifierCar /></ProtectedRoute>} />
-        <Route path='/:role/voitures/delete/:id' element={<ProtectedRoute><DeleteCar /></ProtectedRoute>} />
+     
+        <Route path='/:role/reservation' element={<ProtectedRoute allowedRoles={'admin'}><Reservations /></ProtectedRoute>} />
+        <Route path='/:role/utilisateurs' element={<ProtectedRoute allowedRoles={'admin'}><Clients /></ProtectedRoute>} />
+        <Route path='/:role/voitures' element={<ProtectedRoute allowedRoles={'admin'} ><Voiture /></ProtectedRoute>} />
+        <Route path='/:role/voitures/new' element={<ProtectedRoute allowedRoles={'admin'}><NewCar /></ProtectedRoute>} />
+        <Route path='/:role/voitures/modifyCar/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
+        <Route path='/:role/voitures/delete/:id' element={<ProtectedRoute allowedRoles={'admin'}><DeleteCar /></ProtectedRoute>} />
 
 
         
