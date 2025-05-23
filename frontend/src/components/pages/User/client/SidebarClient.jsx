@@ -19,13 +19,35 @@ const SidebarClient = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  const user = localStorage.getItem('user');
+  let parsedUser;
+  try {
+    parsedUser = JSON.parse(user);
+  } catch (error) {
+    console.error('Erreur lors du parsing de l\'utilisateur :', error);
+    return;
+  }
+
+  const slugify = (str) => {
+  if (!str) return '';
+  return str
+    .normalize('NFD') // Décomposer les caractères accentués
+    .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Supprimer les caractères non alphanumériques
+    .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
+    .replace(/-+/g, '-') // Supprimer les tirets multiples
+    .trim(); // Supprimer les tirets en début/fin
+  };
+  const fullSlug = encodeURIComponent(`${slugify(parsedUser.nom)}-${slugify(parsedUser.prenom)}`);
+
 const menuItems = [
-  { name: 'Dashboard', icon: <Home size={20} />, path: '/client/dashboard' },
-  { name: 'Mes Réservations', icon: <Calendar size={20} />, path: '/client/mes-reservations' },
-  { name: 'Réserver une Voiture', icon: <Car size={20} />, path: '/client/reserver' },
-  { name: 'Notifications', icon: <Bell size={20} />, path: '/client/notifications', badge: 3 },
-  { name: 'Mon Profil', icon: <User size={20} />, path: '/client/mon-profil' },
-  { name: 'Paramètres', icon: <Settings size={20} />, path: '/client/parametres' },
+  { name: 'Dashboard', icon: <Home size={20} />, path: `/${parsedUser.role}/dashboard/${parsedUser.id}/${fullSlug}` },
+  { name: 'Mes Réservations', icon: <Calendar size={20} />, path: `/${parsedUser.role}/reservation` },
+  { name: 'Réserver une Voiture', icon: <Car size={20} />, path: `/${parsedUser.role}/reserver` },
+  { name: 'Notifications', icon: <Bell size={20} />, path: `/${parsedUser.role}/notifications`, badge: 3 },
+  { name: 'Mon Profil', icon: <User size={20} />, path: `/${parsedUser.role}/my/profil/${parsedUser.id}` },
+  { name: 'Paramètres', icon: <Settings size={20} />, path: `/${parsedUser.role}/settings/${parsedUser.id}` },
 ];
 
 

@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
     const stored = localStorage.getItem('user');
     return stored ? JSON.parse(stored) : null;
   });
-  console.log(user)
 
   const login = (tokenValue, userData) => {
     localStorage.setItem('token', tokenValue);

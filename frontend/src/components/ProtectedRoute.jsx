@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ error: 'Veuillez vous connecter pour accéder à cette page' }} />;
+    return <Navigate to="/login"  />;
   }
 
   // Si allowedRoles est spécifié, vérifier si le rôle de l'utilisateur est autorisé

@@ -3,10 +3,11 @@
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Api\Admin\VoitureController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\VoitureController as ApiVoitureController;
 use App\Http\Controllers\Api\UserController;
 
-use App\Http\Controllers\Api\ClientController;
+
 
 use App\Http\Controllers\Api\ReservationController;
 
@@ -29,16 +30,15 @@ Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les mod
 Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
 
-Route::get('/auth/google', [UserController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
-
+Route::post('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
+Route::get('/verify-new-email/{token}', [ClientController::class, 'verifyNewEmail']);
 /*
 |------------------------------------------------------------------
 | Client seulement
 |------------------------------------------------------------------
 */
 Route::middleware(['auth:sanctum','role:client'])->group(function () {
-    Route::get('/user/dashboard/{id}/{name}', [ClientController::class, 'dashboard']);
+    Route::get('/user/dashboard/{id}', [ClientController::class, 'dashboard']);
 
     /** Pour gérer le profil */
     Route::prefix('user/profil')->group(function() {
@@ -54,6 +54,15 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
         Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
         Route::get('/my/{id}', [ReservationController::class, 'show']);
     });
+
+    /**
+     *  Voitures
+     */
+    Route::prefix('user/voitures')->group(function () {
+        Route::get('/', [VoitureController::class, 'index']);
+        Route::get('/show/{id}', [VoitureController::class, 'show']);
+    });
+    
 
 });
 

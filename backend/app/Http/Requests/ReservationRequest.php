@@ -18,7 +18,7 @@ class ReservationRequest extends FormRequest
             'dateFin' => 'required|date|after:dateDebut',
             'statut' => 'nullable|in:payé,expiré,en cours,en attente',
             'montant_total' => 'required|numeric|min:0',
-            'idClient' => 'required|exists:clients,id',
+            'idClient' => 'nullable|exists:clients,id',
             'idVoiture' => 'required|exists:voitures,id',
         ];
     }

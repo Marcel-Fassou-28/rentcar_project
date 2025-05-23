@@ -68,6 +68,7 @@ class Utilisateur extends Authenticatable
         'birthday',
         'telephone',
         'remember_token',
+        'google_id',
     ];
 
     /**

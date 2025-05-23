@@ -37,10 +37,11 @@ class Client extends Model
     /**
      * Relation avec la table utilisateurs (One-to-One, inverse)
      */
-    public function utilisateur()
-    {
-        return $this->belongsTo(Utilisateur::class, 'id', 'id');
+    public function utilisateur(){
+        return $this->belongsTo(Utilisateur::class, 'idUtilisateur');
+
     }
+
 
     /**
      * Relation avec la table reservations (One-to-Many)

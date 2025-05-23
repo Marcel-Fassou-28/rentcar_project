@@ -69,11 +69,6 @@ function Contact() {
             </div>
         </motion.div>
       </div>
-
-      {/* Localisation via map de la localisation du l'entreprise */}
-      <div>
-        <GoogleMap />
-      </div>
     </div>
   )
 }

@@ -4,16 +4,18 @@ import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from '../config/Axios';
-import { useState } from 'react';
+import {useState } from 'react';
 import { useAuth, slugify } from './../AuthContext';
-import { GoogleLogin } from '@react-oauth/google';
+import GoogleAuth from './GoogleAuth';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const { login } = useAuth();
   const { state } = useLocation();
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,21 +39,6 @@ function Login() {
       setError(err.response?.data?.message || 'Échec de la connexion');
     }
   };
-
-  const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            const response = await axios.get('/auth/google/callback', {
-                headers: { Authorization: `Bearer ${credentialResponse.credential}` },
-            });
-            if (response.data.success) {
-                localStorage.setItem('token', response.data.token);
-                setSuccess(response.data.message);
-                setTimeout(() => navigate('/dashboard'), 2000);
-            }
-        } catch (err) {
-            setError(err.response?.data?.message || 'Erreur Google Auth.');
-        }
-    };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-orange-100 pt-16 md:pt-8 lg:pt-4">
@@ -150,10 +137,7 @@ function Login() {
             </div>
 
             <button className="mt-1 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 hover:bg-gray-50 transition">
-              <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={() => setError('Échec de la connexion Google.')}
-                />
+              <GoogleAuth setError={setError} />
             </button>
           </div>
 

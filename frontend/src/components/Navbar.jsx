@@ -37,7 +37,7 @@ const Navbar = () => {
       token && id && slug && role
         ? [
             { to: `/${role}/dashboard/${id}/${slug}`, label: 'Dashboard', icon: <Home size={20} /> },
-            { to: '/models', label: 'Models', icon: <CarFront size={20} /> },
+            { to: `/${role}/models`, label: 'Models', icon: <CarFront size={20} /> },
             { to: `/${role}/reservation`, label: 'Reservation', icon: <CarFront size={20} /> },
             { to: '/contact', label: 'Contact', icon: <Contact size={20} /> },
           ]
@@ -121,7 +121,7 @@ const Navbar = () => {
         {token ? (
           <div className="flex items-center space-x-4">
             {/* Photo de profil */}
-            <Link to={`/my/profil/${id}/${slug}`} aria-label="Profil">
+            <Link to={`${role}/my/profil/${id}`} aria-label="Profil">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}

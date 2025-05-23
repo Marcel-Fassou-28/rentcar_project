@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\Client;
 use App\Models\Note;
 use App\Models\Utilisateur;
 use App\Notifications\WelcomeNotification;
 use Exception;
+use Google_Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,15 +75,6 @@ class UserController extends Controller
                 'message' => 'Identifiants incorrects.',
             ], 401);
         }   
-    }
-
-    /**
-     * Pour afficher les certaines informations générales sur le site
-     * Commme le nombre d'utilisateurs qui nous font confiance
-     * Les notes, etc...
-     */
-    public function all() {
-
     }
 
     public function logout(Request $request)
@@ -158,106 +151,81 @@ class UserController extends Controller
             : response()->json(['success' => false, 'message' => __($status)], 422);
     }
 
-    /**
-     * Redirige vers Google pour l'authentification OAuth.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')
-            ->stateless()
-            ->with(['access_type' => 'offline', 'prompt' => 'consent'])
-            ->redirect();
-    }
 
-    /**
-     * Gère le callback Google pour connexion ou inscription.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
-            $user = Utilisateur::where('email', $googleUser->email)->first();
+            $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $payload = $client->verifyIdToken($request->credential);
 
-            if ($user) {
-                // Connexion de l'utilisateur existant
-                return $this->loginAndRespond($user, 'Connexion réussie avec Google.', 200);
+            if (!$payload) {
+                return response()->json(['message' => 'Jeton Google invalide'], 401);
             }
 
-            // Création d'un nouvel utilisateur
-            $user = Utilisateur::create([
-                'nom' => $googleUser->user['family_name'] ?? 'N/A',
-                'prenom' => $googleUser->user['given_name'] ?? 'N/A',
-                'email' => $googleUser->email,
-                'birthday' => $googleUser->user['birthday'] ?? 'N/A',
-                'telephone' => $googleUser->user['phone'] ?? 'N/A',
-                'password' => bcrypt(Str::random(16)),
-                'role' => 'client',
-                'photo' => $this->downloadGoogleProfilePicture($googleUser->avatar),
-            ]);
-
-            $user->notify(new WelcomeNotification($user));
-
-            return $this->loginAndRespond($user, 'Inscription réussie avec Google.', 201);
-        } catch (\Exception $e) {
-            Log::error('Erreur Google Auth: ' . $e->getMessage());
+            $googleId = $payload['sub'];
+            $email = $payload['email'];
+            $name = $payload['name'];
+            $givenName = $payload['given_name'];
+            $familyName = $payload['family_name'];
+            $picture = $payload['picture'] ?? null;
+            $user = Utilisateur::where('google_id', $googleId)->orWhere('email', $email)->first();
+            if (!$user) {
+                $user = Utilisateur::create([
+                    'google_id' => $googleId,
+                    'email' => $email,
+                    'nom' => $familyName,
+                    'prenom' => $givenName,
+                    'password' => Hash::make(Str::random(20)), // Random password for non-Google logins
+                    'photo' => $picture,
+                ]);
+                $u = Utilisateur::where('google_id', $googleId)->orWhere('email', $email)->first();;
+                Client::create([
+                    'id' => $u->id,
+                    'permisConduire' => '',
+                ]);
+                $user->notify(new WelcomeNotification($user));
+            } else {
+                $user->update([
+                    'google_id' => $googleId,
+                ]);
+            }
+            $token = $user->createToken('token')->plainTextToken;
             return response()->json([
-                'success' => false,
-                'message' => 'Échec de l\'authentification Google.',
-            ], 500);
+                'user' => $user,
+                'token' => $token,
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Google auth error: ' . $e->getMessage());
+            return response()->json(['message' => 'Erreur lors de l\'authentification Google'], 500);
         }
     }
 
     /**
-     * Connecte l'utilisateur et retourne une réponse JSON.
+     * Télécharge et stocke la photo de profil Google localement.
      *
-     * @param  \App\Models\Utilisateur  $user
-     * @param  string  $message
-     * @param  int  $statusCode
-     * @return \Illuminate\Http\JsonResponse
+     * @param string|null $avatarUrl URL de la photo Google
+     * @param User $user Utilisateur pour associer la photo
+     * @return string|null Nom du fichier stocké ou null si échec
      */
-    private function loginAndRespond($user, $message, $statusCode)
+    private function downloadAndStoreProfilePhoto(?string $avatarUrl, Utilisateur $user): ?string
     {
-        Auth::login($user);
-        $photoUrl = $user->photo && Storage::disk('public')->exists('profil/' . $user->photo)
-            ? url('storage/profil/' . $user->photo)
-            : null;
-
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'user' => array_merge($user->toArray(), ['photo' => $photoUrl]),
-            'token' => $user->createToken('MA_CLEE_SECRET')->plainTextToken,
-        ], $statusCode);
-    }
-
-    /**
-     * Télécharge et enregistre la photo de profil Google.
-     *
-     * @param  string|null  $url
-     * @return string|null
-     */
-    private function downloadGoogleProfilePicture($url)
-    {
-        if (!$url) {
+        if (!$avatarUrl) {
             return null;
         }
 
         try {
-            $contents = @file_get_contents($url);
-            if ($contents === false) {
-                Log::warning('Échec du téléchargement de la photo Google: URL invalide.');
+            $photoContent = @file_get_contents($avatarUrl);
+            if ($photoContent === false) {
+                Log::warning('Échec du téléchargement de la photo de profil Google pour l\'utilisateur: ' . $user->email);
                 return null;
             }
 
-            $filename = 'google_' . uniqid() . '.jpg';
-            Storage::disk('public')->put('profil/' . $filename, $contents);
-            return $filename;
-        } catch (\Exception $e) {
-            Log::error('Erreur lors du téléchargement de la photo Google: ' . $e->getMessage());
+            $extension = pathinfo(parse_url($avatarUrl, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+            $photoName = 'profil/google_'. time(). '_' . $user->id . '_' . Str::random(10) . '.' . $extension;
+            Storage::disk('public')->put($photoName, $photoContent);
+            return $photoName;
+        } catch (Exception $e) {
+            Log::error('Erreur lors du téléchargement de la photo de profil Google: ' . $e->getMessage());
             return null;
         }
     }
