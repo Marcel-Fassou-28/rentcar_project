@@ -56,6 +56,19 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
         Route::patch('/my/{id}', [ReservationController::class, 'update']);
         Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
         Route::get('/my/{id}', [ReservationController::class, 'show']);
+        Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
+    Route::prefix('user/reservations')->group(function () {
+        Route::get('/my', [ReservationController::class, 'index']);
+        Route::post('/my', [ReservationController::class, 'store']);
+        Route::patch('/my/{id}', [ReservationController::class, 'update']);
+        Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
+        Route::get('/my/{id}', [ReservationController::class, 'show']);
+
+        
+        Route::patch('/my/{id}/annuler', [ReservationController::class, 'annuler']);
+    });
+});
+
     });
 
     /**
