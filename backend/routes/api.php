@@ -75,12 +75,6 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
 */
 Route::middleware(['auth:sanctum','role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
-    
-    /** Pour gérer le profil */
-    /*Route::prefix('admin/profil')->group(function() {
-        Route::get('/{id}', [AdminController::class, 'profil']);
-        Route::patch('/update/{id}', [AdminController::class, 'update']);
-    });*/
 
     /** 
      * Gestion des réservations 
@@ -98,8 +92,8 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
      */
    
     Route::prefix('admin/users')->group(function () {
-        Route::get('/reservation',   [ClientController::class, 'reservationClient']);
         Route::get('/',   [ClientController::class, 'index']);
+        Route::get('/reservation',   [ClientController::class, 'reservationClient']);
         Route::delete('/delete/{id}',  [ClientController::class, 'destroy']);
         Route::get('/show/{id}',   [ClientController::class, 'show']);
     });
