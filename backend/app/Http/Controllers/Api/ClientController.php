@@ -25,8 +25,8 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'telephone','created_at', 'photo','clients.permisConduire')
-            //->join('clients', 'utilisateurs.id', '=', 'clients.id')
+        $clients = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone','created_at', 'photo','clients.permisConduire')
+            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('role', 'client')
             ->get();
 
@@ -69,7 +69,7 @@ class ClientController extends Controller
                 'nom' => $utilisateur->nom,
                 'prenom' => $utilisateur->prenom,
                 'email' => $utilisateur->email,
-                'birthay' => $utilisateur->birthay,
+                'birthay' => $utilisateur->birthday,
                 'adresse' => $utilisateur->adresse,
                 'telephone' => $utilisateur->telephone,
                 'photo' => $utilisateur->photo,
@@ -105,7 +105,7 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone', 'photo', 'clients.permisConduire')
+        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone', 'photo')
             ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('utilisateurs.id', $id)
             ->where('role', 'client')

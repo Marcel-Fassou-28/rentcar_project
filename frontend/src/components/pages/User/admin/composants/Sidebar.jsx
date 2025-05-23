@@ -47,19 +47,19 @@ const Sidebar = () => {
             </Link>
           </li>
          <li className="flex items-center p-[10px] mr-[10px] cursor-pointer hover:bg-gray-200 rounded">
-            <Link to={`admin/utilisateurs`} className="decoration-none color-inherit">
+            <Link to={`/admin/utilisateurs`} className="decoration-none color-inherit">
               <PersonOutlinedIcon className="text-orange-500 text-[20px]" />
               <span className="ml-[10px] text-[15px] font-semibold text-gray-800">Utilisateurs</span>
             </Link>
           </li>
           <li className="flex items-center p-[10px] mr-[10px] cursor-pointer hover:bg-gray-200 rounded">
-            <Link to={`${user.role}/voitures`} className="decoration-none color-inherit">
+            <Link to={`/${user.role}/voitures`} className="decoration-none color-inherit">
               <InventoryIcon className="text-orange-500  text-[20px]" />
               <span className="ml-[10px] text-[15px] font-semibold text-gray-800">Voitures</span>
             </Link>
           </li>
           <li className="flex items-center p-[10px] mr-[10px] cursor-pointer hover:bg-gray-200 rounded">
-            <Link to={`${user.role}/reservation`} className="decoration-none color-inherit">
+            <Link to={`/${user.role}/reservation`} className="decoration-none color-inherit">
               <BorderAllIcon className="text-orange-500 text-[20px]" />
               <span className="ml-[5px] text-[15px] font-semibold text-gray-800">Reservations</span>
             </Link>
