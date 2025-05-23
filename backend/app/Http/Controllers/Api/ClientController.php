@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Utilisateur;
 use App\Models\Client;
 use App\Http\Requests\UserRequest;
@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -101,13 +103,18 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthay', 'adresse', 'telephone', 'photo', 'clients.permisConduire')
+        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'telephone', 'birthday', 'photo', 'email', 'adresse')
             ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('utilisateurs.id', $id)
             ->where('role', 'client')
             ->groupBy('utilisateurs.id')
-            ->firstOrFail();
-        dd($client);
+            ->first();
+
+        $photoUrl = $client->photo && Storage::disk('public')->exists('profil/' . $client->photo)
+            ? url('storage/profil/' . $client->photo)
+            : null;
+        $client->photo = $photoUrl;
+
         return response()->json([
             'status' => 'success',
             'data' => $client
@@ -117,46 +124,64 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, string $id)
+    public function update(UpdateProfileRequest $request, string $id)
     {
         $validated = $request->validated();
-
-        // Trouver l'utilisateur
         $utilisateur = Utilisateur::where('id', $id)
             ->where('role', 'client')
             ->firstOrFail();
+        
+        if ($request->has('photo') && $request->photo['name'] && $request->photo['data']) {
+                $photoData = $request->photo['data'];
+                if (!preg_match('/^data:image\/(jpeg|png|jpg);base64,(.+)$/', $photoData, $matches)) {
+                    return response()->json([
+                        'message' => 'Format d\'image invalide',
+                    ], 422);
+                }
+                $mimeType = $matches[1]; 
+                $base64Data = $matches[2]; 
 
-        // Mettre à jour l'utilisateur
+                $imageData = base64_decode($base64Data);
+                if ($imageData === false) {
+                    return response()->json([
+                        'message' => 'Erreur lors du décodage de l\'image',
+                    ], 422);
+                };
+
+                if (strlen($imageData) > 2 * 1024 * 1024) {
+                    return response()->json([
+                        'message' => 'L\'image ne doit pas dépasser 2 Mo.',
+                    ], 422);
+                };
+
+                $fileName = 'profil_' . time() . '_' . Str::random(16) . '.' . pathinfo(pathinfo($request->photo['name'], PATHINFO_BASENAME), PATHINFO_EXTENSION);
+                $filePath = 'profil/' . $fileName;
+                Storage::disk('public')->put($filePath, $imageData);
+                if ($utilisateur->photo && Storage::disk('public')->exists('profil/' . $utilisateur->photo) && $utilisateur->photo != 'avatar.png') {
+                    Storage::disk('public')->delete('profil/' . $utilisateur->photo);
+                }
+            }
         $utilisateur->update([
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'email' => $validated['email'],
-            'password' => isset($validated['password']) ? Hash::make($validated['password']) : $utilisateur->password,
             'birthay' => $validated['birthday'],
             'adresse' => $validated['adresse'],
             'telephone' => $validated['telephone'],
-            'photo' => $validated['photo'] ?? $utilisateur->photo,
+            'photo' => $fileName ?? $utilisateur->photo,
         ]);
 
-        // Mettre à jour l'entrée dans la table clients
-        $utilisateur->client()->update([
-            'permisConduire' => $request->input('permisConduire') ?? $utilisateur->client->permisConduire,
-        ]);
-
+        $utilisateur = Utilisateur::where('id', $id)
+            ->where('role', 'client')
+            ->firstOrFail();
+        $photoUrl = $utilisateur->photo && Storage::disk('public')->exists('profil/' . $utilisateur->photo)
+            ? url('storage/profil/' . $utilisateur->photo)
+            : null;
+        $utilisateur->photo = $photoUrl;
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'message' => 'Client mis à jour avec succès',
-            'data' => [
-                'id' => $utilisateur->id,
-                'nom' => $utilisateur->nom,
-                'prenom' => $utilisateur->prenom,
-                'email' => $utilisateur->email,
-                'birthay' => $utilisateur->birthay,
-                'adresse' => $utilisateur->adresse,
-                'telephone' => $utilisateur->telephone,
-                'photo' => $utilisateur->photo,
-                'permisConduire' => $utilisateur->client->permisConduire,
-            ]
+            'data' => $utilisateur,
         ], 200);
     }
 

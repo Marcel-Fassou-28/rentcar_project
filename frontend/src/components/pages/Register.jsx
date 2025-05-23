@@ -4,6 +4,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../config/Axios';
+import GoogleRegister from './GoogleRegister';
 
 const Register = () => {
    const [formData, setFormData] = useState({
@@ -391,7 +392,7 @@ const Register = () => {
             <button
               className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md py-2 hover:bg-gray-50 transition"
             >
-              <FcGoogle /> S'incrire avec google
+              <GoogleRegister setError={setError} />
             </button>
           </motion.div>
 

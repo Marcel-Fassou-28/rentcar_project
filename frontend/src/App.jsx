@@ -19,7 +19,7 @@ import Clients from './components/pages/User/admin/composants/Clients'
 import Voiture from './components/pages/User/admin/composants/voiture/Voiture'
 import NewCar from './components/pages/User/admin/composants/voiture/NewCar'
 import ModifierCar from './components/pages/User/admin/composants/voiture/ModifierCar'
-import Reservations from './components/pages/Reservations'
+
 import ForgotPassword from './components/pages/ForgotPassword'
 import ResetPassword from './components/pages/ResetPassword'
 import Profil from './components/pages/User/Profil'
@@ -28,6 +28,7 @@ import DashboardClient from './components/pages/User/client/dashboard'
 import MesReservations from './components/pages/User/client/MesReservations'
 import ReserverVoiture from './components/pages/User/client/ReserverVoiture'
 import ProfilClient from './components/pages/User/client/ProfilClient'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 function App() {
   return (
@@ -49,8 +50,7 @@ function App() {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         
-        <Route path='/:role/reservation' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
-        <Route path='/client/mes-reservations' element={<ProtectedRoute><MesReservations /></ProtectedRoute>} />
+        <Route path='/:role/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
         <Route path='/:role/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
         <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
 

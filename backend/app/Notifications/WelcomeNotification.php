@@ -24,9 +24,9 @@ class WelcomeNotification extends Notification
         return (new MailMessage)
             ->subject('Bienvenue sur RentCar App !')
             ->greeting('Bonjour ' . $this->user->prenom . ' !')
-            ->line('Merci de vous être inscrit sur RentCar App.')
+            ->line('Merci de vous êtes inscrits sur RentCar App.')
             ->line('Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter pour commencer à explorer nos voitures.')
             ->action('Se connecter', config('app.frontend_url', 'http://localhost:5173') . '/login')
-            ->line('Si vous avez des questions, contactez notre support à support@rentcarapp.com.');
+            ->line('Si vous avez des questions, contactez notre support à <a href="mailto:support@rentcarapp.com">support@rentcarapp.com</a>.');
     }
 }

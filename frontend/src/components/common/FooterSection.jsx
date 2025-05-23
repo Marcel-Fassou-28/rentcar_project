@@ -115,7 +115,7 @@ function FooterSection() {
         </div>
 
         {/* Newsletter */}
-        <div className="border-t border-gray-800 pt-8 pb-6">
+        {/*<div className="border-t border-gray-800 pt-8 pb-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <h3 className="text-xl font-semibold mb-2">Abonnez-vous à notre newsletter</h3>
@@ -137,7 +137,7 @@ function FooterSection() {
               </form>
             </div>
           </div>
-        </div>
+        </div>*/}
 
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">

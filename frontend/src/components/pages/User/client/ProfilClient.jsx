@@ -1,45 +1,165 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import SidebarClient from './SidebarClient';
 import axios from '../../../config/Axios';
 import { useAuth } from "../../../../components/AuthContext";
-import { User, Mail, Phone, Home, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Mail, Phone, Home, Save, AlertCircle, CheckCircle, Calendar, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Cropper from 'react-easy-crop';
+import { data } from 'react-router-dom';
 
 const ProfilClient = () => {
-  const { user } = useAuth();
-  const [formData, setFormData] = useState({ nom: '', email: '', telephone: '', adresse: '' });
+  const { user} = useAuth(); // Récupérez user et login depuis le contexte
+  const [formData, setFormData] = useState({
+    id: user?.id || '',
+    nom: user?.nom || '',
+    prenom: user?.prenom || '',
+    email: user?.email || '',
+    telephone: user?.telephone || '',
+    birthday: user?.birthday || '',
+    adresse: user?.adresse || '',
+    photo: user?.photo || ''
+  });
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('success');
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(user.photo || '');
 
   useEffect(() => {
-    setLoading(true);
-    axios.get(`/user/profil/${user.id}`)
-      .then(res => {
-        setFormData(res.data);
+    const fetchUserProfile = async () => {
+      if (!user?.id) {
         setLoading(false);
-      })
-      .catch(() => {
-        setMessage("Erreur lors du chargement des données");
+        return;
+      }
+      setLoading(true);
+      try {
+        const response = await axios.get(`/user/profil/${user.id}`);
+        setFormData(prev => ({ ...prev, ...response.data }));
+      } catch (err) {
+        setMessage(err.response?.data?.message || 'Erreur lors du chargement des données');
         setMessageType('error');
+      } finally {
         setLoading(false);
-      });
-  }, [user.id]);
+      }
+    };
+    fetchUserProfile();
+  }, [user?.id]);
 
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCrop = async () => {
+    try {
+      const croppedImage = await getCroppedImg(previewUrl, croppedAreaPixels, photoFile);
+      setPhotoFile(croppedImage);
+      setPreviewUrl(URL.createObjectURL(croppedImage));
+      setShowCropper(false);
+      handleChange({ target: { name: 'photo', value: croppedImage.name } });
+    } catch (e) {
+      setError('Erreur lors du recadrage de l’image');
+      console.error('Error cropping image:', e);
+    }
+  };
+
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!validExtensions.includes(file.type)) {
+        setError('Veuillez sélectionner un fichier JPEG ou PNG.');
+        return;
+      }
+      setPhotoFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setShowCropper(true);
+      setError(null);
+    }
+  };
+
+  const getCroppedImg = async (imageSrc, pixelCrop, originalFile) => {
+    const image = new Image();
+    image.src = imageSrc;
+    await new Promise((resolve) => (image.onload = resolve));
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+
+    const mimeType = originalFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
+  return new Promise((resolve) => {
+    canvas.toBlob(
+      (blob) => {
+        const file = new File([blob], originalFile.name, { type: mimeType });
+        resolve(file);
+      },
+      mimeType,
+      0.9 // Quality for JPEG
+    );
+  });
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     setUpdating(true);
+
+    if (photoFile) {
+      const base64Image = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(photoFile);
+      });
+  
+      formData.photo = {
+        name: photoFile.name,
+        data: base64Image, // Contient l'image en base64 (ex. "data:image/jpeg;base64,...")
+      };
+    } else {
+      formData.photo = {
+        name: null,
+        data: null,
+      }
+    }
+
     try {
-      await axios.patch(`/user/profil/update/${user.id}`, formData);
+      const response = await axios.patch(`/user/profil/update/${user.id}`, formData);
       setMessage('Profil mis à jour avec succès !');
       setMessageType('success');
       setTimeout(() => setMessage(''), 5000);
+      console.log(response)
+      console.log(response.data.data);
+      console.log(JSON.stringify(response.data.data));
+      localStorage.setItem('user', JSON.stringify(response.data.data));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+      
     } catch (err) {
       setMessage("Une erreur est survenue lors de la mise à jour du profil.");
       setMessageType('error');
@@ -100,16 +220,60 @@ const ProfilClient = () => {
           className="bg-white shadow-lg rounded-lg border border-gray-200 overflow-hidden"
         >
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-orange-500 mx-auto mb-4">
-              <User size={40} />
+        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-orange-500 mx-auto mb-4 relative">
+          <img src={previewUrl || formData.photo || ''} alt="Profile" className="rounded-full object-cover w-full h-full" />
+          <label htmlFor="photo-upload" className="absolute bottom-0 right-0 bg-orange-500 rounded-full p-2 cursor-pointer hover:bg-orange-600">
+            <Camera size={18} className="text-white" />
+            <input
+              id="photo-upload"
+              type="file"
+              accept="image/jpeg,image/png,image/jpg"
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+          </label>
+        </div>
+        <h3 className="text-center text-white text-xl font-bold">{user.nom || 'Utilisateur'}</h3>
+        <p className="text-center text-orange-100">{user.email || 'email@exemple.com'}</p>
+      </div>
+
+      {showCropper && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+            <div className="relative w-full h-64">
+              <Cropper
+                image={previewUrl}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                showGrid={true}
+                cropShape="round"
+              />
             </div>
-            <h3 className="text-center text-white text-xl font-bold">{formData.nom || 'Utilisateur'}</h3>
-            <p className="text-center text-orange-100">{formData.email || 'email@exemple.com'}</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setShowCropper(false)}
+                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleCrop}
+                className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+              >
+                Valider
+              </button>
+            </div>
           </div>
+        </div>
+      )}
 
           <form className="p-6 flex flex-col gap-5" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-600">Nom complet</label>
+              <label className="text-sm font-medium text-gray-600">Nom </label>
               <div className="relative">
                 <User size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input 
@@ -117,7 +281,22 @@ const ProfilClient = () => {
                   value={formData.nom} 
                   onChange={handleChange} 
                   type="text" 
-                  placeholder="Votre nom complet" 
+                  placeholder="Votre nom" 
+                  className="border border-gray-300 p-3 pl-10 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Prénom </label>
+              <div className="relative">
+                <User size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input 
+                  name="prenom" 
+                  value={formData.prenom} 
+                  onChange={handleChange} 
+                  type="text" 
+                  placeholder="Votre prénom" 
                   className="border border-gray-300 p-3 pl-10 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
                 />
               </div>
@@ -148,6 +327,22 @@ const ProfilClient = () => {
                   onChange={handleChange} 
                   type="text" 
                   placeholder="Votre numéro de téléphone" 
+                  className="border border-gray-300 p-3 pl-10 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+                />
+              </div>
+            </div>
+
+            
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Birthday</label>
+              <div className="relative">
+                <Calendar size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input 
+                  name="birthday" 
+                  value={formData.birthday} 
+                  onChange={handleChange} 
+                  type="date" 
+                  placeholder="Birthday" 
                   className="border border-gray-300 p-3 pl-10 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
                 />
               </div>
