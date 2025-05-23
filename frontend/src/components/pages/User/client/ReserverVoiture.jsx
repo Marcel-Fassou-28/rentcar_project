@@ -3,6 +3,7 @@ import SidebarClient from './SidebarClient';
 import axios from '../../../config/Axios';
 import { Car, Calendar, Check, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const ReserverVoiture = () => {
   const [voitures, setVoitures] = useState([]);
@@ -12,13 +13,15 @@ const ReserverVoiture = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     setLoading(true);
     axios.get('/voitures')
       .then(res => {
-        console.log('voitures:', res.data); 
-        
+        console.log('voitures:', res.data); // pour voir la structure
+        // ✅ adapte ici selon ta structure API
         const cars = res.data?.data ?? res.data;
         setVoitures(Array.isArray(cars) ? cars : []);
         setLoading(false);
@@ -54,32 +57,42 @@ const ReserverVoiture = () => {
     return null;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const error = validateForm();
-    
-    if (error) {
-      setMessage(error);
-      setMessageType('error');
-      return;
-    }
-    
-    setSubmitting(true);
-    
-    try {
-      await axios.post('/user/reservations/my', formData);
-      setMessage('Réservation effectuée avec succès !');
-      setMessageType('success');
-      setFormData({ voiture_id: '', dateDebut: '', dateFin: '' });
-      setSelectedCar(null);
-    } catch (error) {
-      setMessage('Une erreur est survenue lors de la réservation.');
-      setMessageType('error');
-    } finally {
-      setSubmitting(false);
-      setTimeout(() => setMessage(''), 5000);
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const error = validateForm();
+
+  if (error) {
+    setMessage(error);
+    setMessageType('error');
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+await axios.post('/user/reservations/my', {
+  idVoiture: formData.voiture_id,
+  dateDebut: formData.dateDebut,
+  dateFin: formData.dateFin,
+  montant_total: selectedCar?.price || 0 
+});
+
+
+
+    setMessage('Votre demande de réservation a bien été envoyée.');
+    setMessageType('success');
+    setFormData({ voiture_id: '', dateDebut: '', dateFin: '' });
+    setSelectedCar(null);
+  } catch (error) {
+    console.error('Erreur lors de la réservation', error);
+    setMessage('Une erreur est survenue lors de la réservation.');
+    setMessageType('error');
+  } finally {
+    setSubmitting(false);
+    setTimeout(() => setMessage(''), 5000);
+  }
+};
+
 
   const today = new Date().toISOString().split('T')[0];
   const minEndDate = formData.dateDebut || today;
@@ -215,12 +228,14 @@ const ReserverVoiture = () => {
             {selectedCar ? (
               <div className="flex flex-col gap-4">
                 <div className="bg-gray-100 h-48 rounded-lg flex items-center justify-center">
-                  {selectedCar.image ? (
+                  {selectedCar.car_photo ? (
                     <img 
-                      src={selectedCar.image} 
+                      src={`/assets/Vehicule/${selectedCar.car_photo}`} 
                       alt={selectedCar.car_name} 
                       className="max-h-full object-contain"
                     />
+
+
                   ) : (
                     <Car size={80} className="text-gray-400" />
                   )}
@@ -250,7 +265,7 @@ const ReserverVoiture = () => {
                 <div className="bg-orange-50 p-4 rounded-lg mt-2">
                   <p className="text-orange-800 font-semibold">Prix par jour</p>
                   <p className="text-3xl font-bold text-orange-600">
-                    {selectedCar.price_per_day || '500'} MAD
+                    {selectedCar.price || '500'}MAD
                   </p>
                 </div>
               </div>
