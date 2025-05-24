@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Sidebar from "../Sidebar";
 import instance from "../../../../../config/Axios";
-import { Car, CarFront, Euro, Fuel, Hash, Layers, Settings, Sparkle, Tag, User } from "lucide-react";
+import { Car, CarFront, Euro, Fuel, Hash, Layers, Settings, Sparkle, Tag, User, User2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Options pour les champs select
 const FORM_OPTIONS = {
+  place: ["2", "4", "6", "5"],
   models: ["Série 3", "X5", "Classe C", "A4", "RAV4", "Civic"],
   categories: ["berline", "suv", "compact", "luxe", "citadine", "4x4"],
   moteurs: ["essence", "diesel", "hybride", "électrique"],
@@ -17,7 +18,7 @@ const formatOption = (value) =>
 
 const NewCar = () => {
 
-  const [formData, setFormData] = useState({immatriculation: "", car_name: "", car_model: "", car_categorie: "", price: "", transmission: "", moteur: "", car_photo: null});
+  const [formData, setFormData] = useState({immatriculation: "", car_name: "", car_model: "", car_categorie: "", place: "", price: "", transmission: "", moteur: "", car_photo: null});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -43,7 +44,7 @@ const NewCar = () => {
     setSuccess(null);
     setLoading(true);
 
-    const requiredFields = ["car_name","immatriculation","car_model","car_categorie","price","transmission","moteur"];
+    const requiredFields = ["car_name","immatriculation","car_model","car_categorie","place" ,"price","transmission","moteur"];
     if (requiredFields.some((field) => !formData[field])) {
       setError("Tous les champs requis doivent être remplis.");
       setLoading(false);
@@ -75,7 +76,7 @@ const NewCar = () => {
       });
       
       setSuccess("Voiture ajoutée avec succès !");
-      setFormData({immatriculation: "",car_name: "",car_model: "",car_categorie: "",price: "",transmission: "",moteur: "",car_photo: null,});
+      setFormData({immatriculation: "",car_name: "",car_model: "",car_categorie: "", place: "" ,price: "",transmission: "",moteur: "",car_photo: null,});
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de l'ajout de la voiture.");
     } finally {
@@ -83,6 +84,7 @@ const NewCar = () => {
       window.scrollTo({top: 0, behavior: 'smooth'})
     }
   };
+
 
   return (
     <div className="flex bg-gradient-to-br from-gray-50 to-gray-200 pt-16">
@@ -133,6 +135,28 @@ const NewCar = () => {
                 className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
                 required
               />
+            </div>
+
+            {/* Champ PLace */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="place" className="text-sm font-medium text-gray-700">
+                Nombre de place <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="place"
+                name="place"
+                value={formData.place}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner le nombre de place</option>
+                {FORM_OPTIONS.place.map((place) => (
+                  <option key={place} value={place}>
+                    {place}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Champ Immatriculation */}
@@ -354,6 +378,16 @@ const NewCar = () => {
                 <p className="text-sm font-medium text-gray-600">Nom</p>
                 <p className="text-base font-semibold text-gray-900">
                   {formData.car_name || "Non spécifié"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <User2 className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">PLace</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.place || "Non spécifié"}
                 </p>
               </div>
             </div>

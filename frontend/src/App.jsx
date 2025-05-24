@@ -56,7 +56,7 @@ function App() {
         <Route path='/admin/voiture/update/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} /> 
         <Route path='/:role/voitures/modifyCar/:id' element={<ProtectedRoute allowedRoles={'admin'}><ModifierCar /></ProtectedRoute>} />
         <Route path='/:role/voitures/delete/:id' element={<ProtectedRoute allowedRoles={'admin'}><DeleteCar /></ProtectedRoute>} />
-        
+
         <Route path='/admin/utilisateurs' element={<ProtectedRoute allowedRoles={'admin'}><Clients /></ProtectedRoute>} />
         <Route path='/admin/reservation' element={<ProtectedRoute allowedRoles={'admin'}><Reservations /></ProtectedRoute>} />
 

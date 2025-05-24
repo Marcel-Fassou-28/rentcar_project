@@ -18,6 +18,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login"  />;
   }
 
+  // Si allowedRoles est spécifié, vérifier si le rôle de l'utilisateur est autorisé
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     return (
       <Navigate

@@ -26,7 +26,8 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::get('/ressources', [UserController::class, 'home']); // Pour certaine information de l'accueil
 
-Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les models de voiture
+Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les tous les models de voiture
+ Route::get('voiture/disponible', [VoitureController::class, 'voitureDisponible']); //pour les models de voiture disponible pour une location
 
 Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/reset', [UserController::class, 'reset'])->name('password.reset');
@@ -57,6 +58,19 @@ Route::middleware(['auth:sanctum','role:client'])->group(function () {
         Route::patch('/my/{id}', [ReservationController::class, 'update']);
         Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
         Route::get('/my/{id}', [ReservationController::class, 'show']);
+        Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
+    Route::prefix('user/reservations')->group(function () {
+        Route::get('/my', [ReservationController::class, 'index']);
+        Route::post('/my', [ReservationController::class, 'store']);
+        Route::patch('/my/{id}', [ReservationController::class, 'update']);
+        Route::delete('/my/{id}', [ReservationController::class, 'destroy']);
+        Route::get('/my/{id}', [ReservationController::class, 'show']);
+
+        
+        Route::patch('/my/{id}/annuler', [ReservationController::class, 'annuler']);
+    });
+});
+
     });
 
     /**
@@ -109,6 +123,7 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function () {
         Route::patch('/update/{id}', [VoitureController::class, 'update']);
         Route::delete('/delete/{id}', [VoitureController::class, 'destroy']);
         Route::get('/show/{id}', [VoitureController::class, 'show']);
+       
     });
 
 });

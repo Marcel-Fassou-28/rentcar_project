@@ -9,6 +9,10 @@ const MesReservations = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchReservations();
+  }, []);
+
+  const fetchReservations = () => {
     setLoading(true);
     axios.get('/user/reservations/my')
       .then(res => {
@@ -19,10 +23,20 @@ const MesReservations = () => {
         setReservations([]);
         setLoading(false);
       });
-  }, []);
+  };
+
+const supprimerReservation = async (id) => {
+  try {
+    await axios.delete(`/user/reservations/my/${id}`);
+    fetchReservations(); // Recharge la liste
+  } catch (error) {
+    console.error('Erreur lors de la suppression :', error);
+  }
+};
+
 
   const getStatusColor = (statut) => {
-    switch(statut?.toLowerCase()) {
+    switch ((statut || '').toLowerCase()) {
       case 'confirmée':
         return 'bg-green-100 text-green-800';
       case 'en attente':
@@ -32,6 +46,10 @@ const MesReservations = () => {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toISOString().split('T')[0]; // YYYY-MM-DD
   };
 
   return (
@@ -44,7 +62,7 @@ const MesReservations = () => {
           transition={{ duration: 0.5 }}
           className="mb-6"
         >
-          <h2 className="text-2xl font-bold text-gray-800  gap-2">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             <CalendarDays className="text-orange-500" />
             Mes Réservations
           </h2>
@@ -82,43 +100,39 @@ const MesReservations = () => {
                 <tbody>
                   {reservations.map((r) => (
                     <tr key={r.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="p-4  gap-2">
-                        <div className='flex items-center gap-2'>
+                      <td className="p-4 flex items-center gap-2">
                         <Car className="text-orange-500" size={18} />
                         <span className="font-medium">{r.voiture?.car_name || 'N/A'}</span>
-                        </div>
                       </td>
-
-                      <td className="p-4  gap-2">
-                        <div className='flex items-center gap-2'>
-                        <Clock size={16} className="text-gray-400" />
-                        {r.dateDebut.split('T')[0]}
-                        </div>
-                      </td>
-
-                      <td className="p-4  gap-2">
-                        <div className='flex items-center gap-2'>
-                            <Clock size={16} className="text-gray-400" />
-                        {r.dateFin.split('T')[0]}
-                        </div>
-                      </td>
-
                       <td className="p-4">
-                        <div className='flex items-center gap-2'>
+                        <Clock size={16} className="text-gray-400 inline mr-2" />
+                        {formatDate(r.dateDebut)}
+                      </td>
+                      <td className="p-4">
+                        <Clock size={16} className="text-gray-400 inline mr-2" />
+                        {formatDate(r.dateFin)}
+                      </td>
+                      <td className="p-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(r.statut)}`}>
                           {r.statut || 'N/A'}
                         </span>
-                        </div>
                       </td>
-
                       <td className="p-4">
-                        <div className='flex items-center gap-2'>
-                        <button 
-                          className="text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm"
-                          onClick={() => console.log('Voir détails', r.id)}
-                        >
-                          Voir détails
-                        </button>
+                        <div className="flex flex-col gap-1">
+                          <button
+                            className="text-blue-600 hover:text-blue-800 transition-colors font-medium text-sm"
+                            onClick={() => console.log('Voir détails', r.id)}
+                          >
+                            Voir détails
+                          </button>
+                          {r.statut === 'en attente' && (
+                            <button
+                              onClick={() => supprimerReservation(r.id)}
+                              className="text-red-600 hover:text-red-800 transition-colors font-medium text-sm"
+                            >
+                              Annuler
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

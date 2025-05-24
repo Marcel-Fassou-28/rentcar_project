@@ -59,6 +59,22 @@ class ReservationController extends Controller
         return response()->json($reservation);
     }
 
+    public function annuler($id)
+    {
+    $reservation = Reservation::find($id);
+
+    if (!$reservation || $reservation->idClient !== Auth::id()) {
+        return response()->json(['message' => 'Réservation non trouvée ou accès interdit'], 404);
+    }
+
+    $reservation->statut = 'annulée';
+    $reservation->save();
+
+    return response()->json(['message' => 'Réservation annulée avec succès.']);
+}
+
+
+
     // Suppression si la réservation appartient au client
     public function destroy($id)
     {

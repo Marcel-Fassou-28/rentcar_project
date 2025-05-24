@@ -39,7 +39,12 @@ const Reservations = () => {
   }
 }, [reservations]);
 
-console.log(reservations);
+
+// var sortedReservations = reservations.sort((a, b) => {
+//   const statusPriority = {"en attente": 1, "en cours": 2, "payé": 3,   "expiré": 4 };
+//   return statusPriority[a.statut] - statusPriority[b.statut];
+// });
+
 
   const updateReservation = (id, etat) => {
     instance
@@ -68,6 +73,37 @@ console.log(reservations);
     return diffDays;
   };
 
+
+  const [status, setStatus] = useState("all");
+
+  const handleChange = (e) => {
+    setStatus(e.target.value);
+  }
+
+
+
+const [sortedReservations, setSortedReservations] = useState(reservations);
+
+useEffect(() => {
+  setSortedReservations(reservations);
+}, [reservations]);
+
+
+const handleSearch = (e) => {
+    e.preventDefault();
+    if (status === "all") {
+      setSortedReservations(reservations);
+      return;
+    }
+    else{
+
+    let filteredReservations = reservations.filter((r) => r.statut === status);
+
+    setSortedReservations(filteredReservations); // ✅ Mise à jour correcte
+    console.log(status);
+    }
+};
+
   const getStatusColor = (statut) => {
     switch (statut) {
       case "payé":
@@ -90,7 +126,7 @@ console.log(reservations);
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold mb-2">Dashboard des Réservations</h1>
-                <p className="text-orange-100">Gérer et suivez toutes vos réservations</p>
+                <p className="text-orange-100">Gérer et suivez toutes les réservations</p>
               </div>
               <div className="mt-4 md:mt-0 flex items-center">
                 <div className="bg-white text-orange-600 p-2 rounded-full">
@@ -109,7 +145,22 @@ console.log(reservations);
           transition={{ duration: 0.5, delay: 0.2 }}
           className=" w-[80%] lg:w-full bg-white rounded-xl shadow-lg border border-gray-100">
             <div className=" overflow-x-auto">
-              <table className=" min-w-full ">
+              <form action="" onSubmit={handleSearch}  className="flex items-center gap-4 px-4 py-4">
+                <div className="flex flex-[1] flex-col gap-2 p-2">
+                <label htmlFor="">Statut</label>
+                <select name="status" id="" 
+                onChange={handleChange}
+                className="border rounded-full p-2 py-1 px-4 focus:outline-none transition-all duration-300 focus:border-gray-500">
+                  <option value="all" className="">Toutes</option>
+                  <option value="en cours">En cours</option>
+                  <option value="payé">Payées</option>
+                  <option value="en attente">En attente</option>
+                  <option value="expiré">Expirees</option>
+                </select>
+                </div>
+                <button type="submit" className=" flex-1 bg-orange-500 text-white px-4 py-2 rounded">Trier</button>
+              </form>
+              {sortedReservations.length > 0 ? <table className=" min-w-full ">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">ID</th>
@@ -123,13 +174,13 @@ console.log(reservations);
                   </tr>
                 </thead>
                 <tbody className="">
-                  {reservations.map((reservation) => (
-                    console.log(reservation),
+                  {sortedReservations.map((reservation) => (
+                    
                     reservation.client.nom && (<tr
                       key={reservation.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">#{reservation?.id}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">#{reservation.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
@@ -137,9 +188,9 @@ console.log(reservations);
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              {reservation.nom + " " + reservation.prenom}
+                              {reservation.client.nom + " " + reservation.client.prenom}
                             </p>
-                            <p className="text-xs text-gray-500">ID: {reservation.client.idClient}</p>
+                            <p className="text-xs text-gray-500">ID: {reservation.idClient}</p>
                           </div>
                         </div>
                       </td>
@@ -149,6 +200,9 @@ console.log(reservations);
                             <Car className="w-4 h-4 text-green-600" />
                           </div>
                           <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {reservation.voiture.car_name}
+                            </p>
                             <p className="text-xs text-gray-500">ID: {reservation.idVoiture}</p>
                           </div>
                         </div>
@@ -198,7 +252,13 @@ console.log(reservations);
                     </tr>
                   )))}
                 </tbody>
-              </table>
+              </table> : 
+              <div className="text-center py-10">
+              <Car className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+              <p className="text-gray-500 text-lg">Aucune réservation trouvée.
+              <span className="text-center text-orange-400"> {status ? " statut: " + status : ""}</span></p>
+            </div>
+}
             </div>
           </motion.div>
         </div>

@@ -229,11 +229,12 @@ await axios.post('/user/reservations/my', {
               <div className="flex flex-col gap-4">
                 <div className="bg-gray-100 h-48 rounded-lg flex items-center justify-center">
                   {selectedCar.car_photo ? (
-                    <img 
-                      src={`/assets/Vehicule/${selectedCar.car_photo}`} 
-                      alt={selectedCar.car_name} 
-                      className="max-h-full object-contain"
-                    />
+                    <img
+  src={`http://127.0.0.1:8000/storage/Vehicule/${selectedCar.car_photo}`}
+  alt={selectedCar.car_name}
+  className="max-h-full object-contain"
+/>
+
 
 
                   ) : (
