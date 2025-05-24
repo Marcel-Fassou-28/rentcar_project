@@ -151,7 +151,7 @@ Utilisez les identifiants suivants pour vous connecter en tant qu'administrateur
 
 ---
 
-## Perpectives
+## Perspectives
 Bien que les fonctionnalités principales soient élaborer, mais on peut étendre ce projet en intégrant plusieurs
 outils comme :
 
@@ -168,3 +168,5 @@ outils comme :
 + Marcel Fassou Haba [Github](https://github.com/Marcel-Fassou-28)
 + Mohamed Msaboue [Github](https://github.com/momomsb)
 + Claude Youmini Ngougou [Github](https://github.com/NGONORMALIA)
+
+***Tous droits réservés***
