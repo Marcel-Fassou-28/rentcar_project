@@ -3,8 +3,9 @@
 
 Ce projet a été réalisé dans le cadre de notre module de Développement Web.
 Il s'agit de Développer une plateforme web intuitive et sécurisée permettant 
-aux clients de rechercher, réserver et gérer leurs locations de véhicules en ligne. 
-L'application offre également offrir aux administrateurs un système efficace de gestion
+aux clients de rechercher, réserver et gérer leurs réservations pour des
+fins de location de véhicules en ligne. 
+L'application offre également offrir aux administrateurs d'utiliser un système efficace de gestion
 des véhicules, des réservations et des utilisateurs sans oublier des interfaces pour 
 visualiser les statistiques de réservation, les inscriptions, etc...
 
