@@ -151,9 +151,6 @@ const Profil = () => {
       setMessage('Profil mis à jour avec succès !');
       setMessageType('success');
       setTimeout(() => setMessage(''), 5000);
-      console.log(response)
-      console.log(response.data.data);
-      console.log(JSON.stringify(response.data.data));
       localStorage.setItem('user', JSON.stringify(response.data.data));
       window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => {

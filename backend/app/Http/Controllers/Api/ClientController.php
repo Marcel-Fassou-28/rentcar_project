@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Http\Requests\UserRequest;
 use App\Models\Paiement;
 use App\Models\Reservation;
+use App\Models\Voiture;
 use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\JsonResponse;
@@ -132,7 +133,7 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'clients.telephone', 'photo')
+        $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'email', 'birthday', 'adresse', 'telephone', 'photo')
             ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('utilisateurs.id', $id)
             ->where('role', 'client')
@@ -221,24 +222,31 @@ class ClientController extends Controller
     {
         $utilisateur = Utilisateur::where('id', $id)
             ->where('role', 'client')
-            ->firstOrFail();
+            ->first();
 
-        $utilisateur->delete(); // Supprime l'utilisateur et l'entrée client via ON DELETE CASCADE
-
+        if($utilisateur) {
+            if ($utilisateur->photo && Storage::disk('public')->exists('profil/' . $utilisateur->photo) && $utilisateur->photo != 'avatar.png') {
+                Storage::disk('public')->delete('profil/' . $utilisateur->photo);
+            }
+            $utilisateur->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Client supprimé avec succès'
+            ], 200);
+        }
         return response()->json([
-            'status' => 'success',
-            'message' => 'Client supprimé avec succès'
+            'success' => false,
+            'message' => 'Opération avec erreur'
         ], 200);
     }
 
     /**
      * Show the specified ressource for the dashboard
      */
-    public function dashboard($id, $nom)
+    public function dashboard($id)
     {
         // Vérifier si le client existe et correspond au nom
         $client = Utilisateur::where('id', $id)
-            ->where('nom', $nom)
             ->where('role', 'client')
             ->first();
 
@@ -246,19 +254,13 @@ class ClientController extends Controller
             return response()->json(['message' => 'Client introuvable.'], 404);
         }
 
-        // ID du client (clé étrangère dans la table `reservations`)
         $clientId = $client->id;
-
-        // Nombre total de réservations du client
         $totalReservations = Reservation::where('idClient', $clientId)->count();
-
-        // Réservations par statut
         $reservationsParStatut = Reservation::where('idClient', $clientId)
             ->select('statut', DB::raw('COUNT(*) as total'))
             ->groupBy('statut')
             ->pluck('total', 'statut');
 
-        // Réservations par mois (12 derniers mois)
         $reservationsParMois = Reservation::where('idClient', $clientId)
             ->where('created_at', '>=', Carbon::now()->subMonths(12))
             ->select(
@@ -269,12 +271,10 @@ class ClientController extends Controller
             ->orderBy('mois')
             ->get();
 
-        // Total des paiements
         $totalPaiements = Paiement::whereHas('reservation', function ($query) use ($clientId) {
             $query->where('idClient', $clientId);
         })->sum('montant');
 
-        // Paiements par mois (12 derniers mois)
         $paiementsParMois = Paiement::whereHas('reservation', function ($query) use ($clientId) {
                 $query->where('idClient', $clientId);
             })
@@ -286,12 +286,15 @@ class ClientController extends Controller
             ->groupBy('mois')
             ->orderBy('mois')
             ->get();
+        
+            $voitureTotal = Reservation::where('idClient', $clientId)->select('idVoiture')->count();
 
         return response()->json([
+            'success' => true,
             'client' => [
                 'id' => $client->id,
-                'nom' => $client->nom,
-                'prenom' => $client->prenom,
+                'nom' => ucwords(strtolower($client->nom)),
+                'prenom' => ucwords(strtolower($client->prenom)),
                 'email' => $client->email,
             ],
             'reservations' => [
@@ -302,7 +305,8 @@ class ClientController extends Controller
             'paiements' => [
                 'total' => $totalPaiements,
                 'par_mois' => $paiementsParMois,
-            ]
+            ],
+            'totalVoiture' => $voitureTotal,
         ]);
     }
 }

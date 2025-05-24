@@ -25,6 +25,7 @@ Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
 Route::get('/ressources', [UserController::class, 'home']); // Pour certaine information de l'accueil
+
 Route::get('/voitures', [ApiVoitureController::class, 'index']); // Pour les models de voiture
 
 Route::post('/email', [UserController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -47,6 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 */
 Route::middleware(['auth:sanctum','role:client'])->group(function () {
     Route::get('/user/dashboard/{id}', [ClientController::class, 'dashboard']);
+    Route::delete('/user/delete/{id}',  [ClientController::class, 'destroy']);
 
     /** Pour les reservations */
     Route::prefix('user/reservations')->group(function() {

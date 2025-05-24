@@ -152,6 +152,36 @@ class UserController extends Controller
             : response()->json(['success' => false, 'message' => __($status)], 422);
     }
 
+    /**
+     * Télécharge et stocke la photo de profil Google localement.
+     *
+     * @param string|null $avatarUrl URL de la photo Google
+     * @return string|null Nom du fichier stocké ou null si échec
+     */
+    public function downloadAndStoreProfilePhoto(?string $avatarUrl): ?string
+    {
+        if (!$avatarUrl) {
+            return null;
+        }
+
+        try {
+            $photoContent = @file_get_contents($avatarUrl);
+            if ($photoContent === false) {
+                Log::warning('Échec du téléchargement de la photo de profil Google pour l\'utilisateur: ');
+                return null;
+            }
+
+            $extension = pathinfo(parse_url($avatarUrl, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+            $photoName = 'profil_google_'. time(). '_' . '_' . Str::random(20) . '.' . $extension;
+            $photoPath = 'profil/' . $photoName;
+            Storage::disk('public')->put($photoPath, $photoContent);
+            return $photoName ?: 'avatar.png';
+        } catch (Exception $e) {
+            Log::error('Erreur lors du téléchargement de la photo de profil Google: ' . $e->getMessage());
+            return null;
+        }
+    }
+
 
     public function handleGoogleCallback(Request $request)
     {
@@ -169,7 +199,9 @@ class UserController extends Controller
             $givenName = $payload['given_name'];
             $familyName = $payload['family_name'];
             $picture = $payload['picture'] ?? null;
+            
             $user = Utilisateur::where('google_id', $googleId)->orWhere('email', $email)->first();
+
             if (!$user) {
                 $user = Utilisateur::create([
                     'google_id' => $googleId,
@@ -177,7 +209,7 @@ class UserController extends Controller
                     'nom' => $familyName,
                     'prenom' => $givenName,
                     'password' => Hash::make(Str::random(20)), // Random password for non-Google logins
-                    'photo' => $picture,
+                    'photo' => downloadAndStoreProfilePhoto($picture),
                 ]);
                 $u = Utilisateur::where('google_id', $googleId)->orWhere('email', $email)->first();;
                 Client::create([
@@ -201,35 +233,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Télécharge et stocke la photo de profil Google localement.
-     *
-     * @param string|null $avatarUrl URL de la photo Google
-     * @param User $user Utilisateur pour associer la photo
-     * @return string|null Nom du fichier stocké ou null si échec
-     */
-    private function downloadAndStoreProfilePhoto(?string $avatarUrl, Utilisateur $user): ?string
-    {
-        if (!$avatarUrl) {
-            return null;
-        }
-
-        try {
-            $photoContent = @file_get_contents($avatarUrl);
-            if ($photoContent === false) {
-                Log::warning('Échec du téléchargement de la photo de profil Google pour l\'utilisateur: ' . $user->email);
-                return null;
-            }
-
-            $extension = pathinfo(parse_url($avatarUrl, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-            $photoName = 'profil/google_'. time(). '_' . $user->id . '_' . Str::random(10) . '.' . $extension;
-            Storage::disk('public')->put($photoName, $photoContent);
-            return $photoName;
-        } catch (Exception $e) {
-            Log::error('Erreur lors du téléchargement de la photo de profil Google: ' . $e->getMessage());
-            return null;
-        }
-    }
 
     /**
      * Display the specified resource.
@@ -237,10 +240,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $client = Utilisateur::select('utilisateurs.id', 'nom', 'prenom', 'telephone', 'birthday', 'photo', 'email', 'adresse')
-            ->join('clients', 'utilisateurs.id', '=', 'clients.id')
             ->where('utilisateurs.id', $id)
-            ->where('role', 'client')
-            ->groupBy('utilisateurs.id')
             ->first();
 
         $photoUrl = $client->photo && Storage::disk('public')->exists('profil/' . $client->photo)
@@ -262,7 +262,7 @@ class UserController extends Controller
         $validated = $request->validated();
         $utilisateur = Utilisateur::where('id', $id)
             ->where('role', 'client')
-            ->firstOrFail();
+            ->first();
         
         if ($request->has('photo') && $request->photo['name'] && $request->photo['data']) {
                 $photoData = $request->photo['data'];

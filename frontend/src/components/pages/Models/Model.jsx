@@ -1,29 +1,51 @@
 import EvStationIcon from '@mui/icons-material/EvStation';
-import SpeedIcon from '@mui/icons-material/Speed';
-const Model = (props) => {
-    
+import SpeedIcon from '@mui/icons-material/Speed';// Replaced MUI icons for consistency
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../AuthContext';
+
+const Model = ({ voiture }) => {
+  const { user } = useAuth();
+
+  const isAdmin = user?.role === 'admin';
+  const linkProps = isAdmin
+    ? { to: `/${user.role}/voitures/modifyCar/${voiture.id}`, label: 'Modifier' }
+    : { to: `/${user.role}/reserver`, label: 'Réserver' };
+
   return (
-    <div className=" h-[300px]  w-[350px] md:w-[200px] lg:w-[300px] h-auto  rounded-lg m-auto  cursor-pointer border border-gray-300 px-4 pb-2">
+    <div className="w-full max-w-[300px] rounded-xl bg-white shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow mx-auto">
       <div className="relative">
         <img
-        src={props.voiture.car_photo}
-        alt="Voiture"
-        className="w-[300px] h-[300px] md:w-[200px] md:h-[200px] lg:w-[300px] lg:h-[300px] m-auto object-cover"
-      />
-      <a href="" className='absolute top-0 right-0 my-4  text-white font-bold bg-orange-400 px-4 py-2 rounded'>reserver</a>
-      <div className=" absolute right-0 bottom-0 w-60 md:w-45  rounded-tl-[50px] flex justify-between items-center bg-red-400 cursor-pointer text-white   px-4">
-        <p className=" font-bold"> A partir de {props.voiture.price}DHS</p>
-        <hr className="border border-gray-400 rounded  h-5 my-3  " />
-        <p>jour</p>
+          src={voiture.car_photo || ''} // Fallback image
+          alt={`${voiture.car_name} photo`}
+          className="w-full h-48 md:h-40 lg:h-48 object-cover scale-90 rounded-lg hover:transform hover:scale-100 transition duration-300"
+        />
+        <Link
+          to={linkProps.to}
+          className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
+          aria-label={linkProps.label}
+        >
+          {linkProps.label}
+        </Link>
+        <div className="absolute bottom-0 right-0 hover:scale-105 cursor-pointer transition duration-200 hover:bg-orange-600 bg-orange-500 text-white rounded-tl-[30px] px-4 py-2 flex items-center gap-2">
+          <span className="font-semibold">À partir de {voiture.price} DHS</span>
+          <div className="h-5 w-px bg-white" />
+          <span>jour</span>
+        </div>
       </div>
-      </div>
-      <h1 className="font-semibold uppercase text-xl mt-5 mb-5">{props.voiture.car_name}</h1>
-      <hr />
-      <div className="flex justify-between my-2 mx-4 text-gray-500 capitalize">
-        <span className='flex gap-2'> <EvStationIcon/> {props.voiture.moteur} </span>
-        <span className='flex gap-2'>  <SpeedIcon />{props.voiture.transmission}</span>
+      <h1 className="font-semibold text-xl uppercase mt-4 mb-2 text-gray-900">{voiture.car_name}</h1>
+      <hr className="border-gray-200" />
+      <div className="flex justify-between mt-3 text-gray-600">
+        <span className="flex items-center gap-2">
+          <EvStationIcon size={20} />
+          {voiture.moteur || 'N/A'}
+        </span>
+        <span className="flex items-center gap-2 hover:text-orange-600 cursor-pointer">
+          <SpeedIcon size={20} />
+          {voiture.transmission || 'N/A'}
+        </span>
       </div>
     </div>
   );
 };
+
 export default Model;

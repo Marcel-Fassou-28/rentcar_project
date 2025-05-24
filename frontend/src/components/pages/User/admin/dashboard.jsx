@@ -202,7 +202,7 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
             <Actu icons={unit} key={unit.title} />
           ))}
         </div>
-        <div className=" px-4  flex flex-col flex-wrap lg:flex-row lg:items-center">
+        <div className=" px-4  flex flex-col flex-wrap lg:flex-row lg:items-center w-[96%] lg:w-[98%]">
           <ReservationChart reservationData={reservationData} />
           <RevenuChart revenueData={revenueData} />
           <EtatCarChar data={stateCar} />

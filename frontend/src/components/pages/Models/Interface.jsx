@@ -2,8 +2,10 @@ import Model from "./model";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import instance from "../../config/Axios";
-
+import { CarFront } from "lucide-react";
 import { Car, Jeep, CarSimple } from "@phosphor-icons/react";
+import { Link, useSearchParams } from "react-router-dom";
+
 
 const Interface = () => {
 
@@ -11,12 +13,23 @@ const Interface = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [startScroll, setStartScroll] = useState(false);
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category") || "";
+
+  const categories = [
+  {name: '', icon: CarFront, label: 'All'},
+  { name: 'SUV', icon: Car, label: 'SUV' },
+  { name: '4X4', icon: Jeep, label: '4x4' },
+  { name: 'Berline', icon: Car, label: 'Berline' },
+  { name: 'Citadine', icon: CarSimple, label: 'Citadine' },
+  { name: 'Compact', icon: Car, label: 'Compact' },
+  { name: 'Luxe', icon: Jeep, label: 'Luxe' },
+];
 
   useEffect(() => {
     const fetchVoitures = async () => {
       try {
-        const response = await instance.get("/voitures");
-
+        const response = await instance.get(`/voitures${category ? `?category=${category}` : ""}`);
         setVoitures(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -27,12 +40,7 @@ const Interface = () => {
     };
 
     fetchVoitures();
-  }, []);
-
-
-
-  
-  
+  }, [category]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +66,7 @@ const Interface = () => {
     );
 
 
+
   return (
     <div className="">
       <motion.div
@@ -81,44 +90,32 @@ const Interface = () => {
             <a href="/models">/ Voitures</a>
           </div>
         </div>
-
+        
         <div className=" relative bg-white ">
-          <div className="  flex  gap-16 flex-wrap p-4 justify-center items-center shadow-xl w-2/3 md:w-[770px] lg:w-[90%] mx-auto px-8">
-            <div className="flex flex-col  font-bold items-center gap-2 cursor-pointer hover:text-red-500  w-16">
-              <Car size={32} weight="duotone" />
-              <span className=" text-gray-400 ">SUV</span>
-            </div>
-            <div className="flex flex-col items-center font-bold gap-2 cursor-pointer hover:text-red-500 w-16">
-              <Jeep size={32} weight="duotone" />
-              <span className="text-gray-400">4X4</span>
-            </div>
-            <div className="flex flex-col items-center  font-bold gap-2 cursor-pointer hover:text-red-500 w-16">
-              <Car size={32} weight="duotone" />
-              <span className="text-gray-400"> BERLINE</span>
-            </div>
-            <div className="flex flex-col items-center  font-bold gap-2 cursor-pointer hover:text-red-500 w-16">
-              <CarSimple size={32} weight="duotone" />
+           <div className="flex  gap-16 flex-wrap p-4 justify-center items-center shadow-xl w-2/3 md:w-[770px] lg:w-[90%] mx-auto px-8">
+        {categories.map(({ name, icon: Icon, label }) => (
+          <Link
+            key={name}
+            to={`?category=${name.toLowerCase()}`}
+            className={`flex w-20 flex-col items-center gap-2 text-center font-semibold text-gray-600 transition-colors hover:text-red-500
+            ${ category && category.toLowerCase() === name.toLowerCase()
+            ? "text-red-500"
+            : "text-gray-600 hover:text-red-500"
+            }`}>
+            <Icon size={32} weight="duotone" />
+            <span>{label}</span>
+          </Link>
+        ))}
+      </div>
 
-              <span className="text-gray-400"> CITADINE</span>
-            </div>
-            <div className="flex flex-col items-center  font-bold gap-2 cursor-pointer hover:text-red-500 w-16">
-              <Car size={32} weight="duotone" />
-              <span className="text-gray-400">COMPACT</span>
-            </div>
-            <div className="flex flex-col items-center  font-bold gap-2 cursor-pointer hover:text-red-500 w-16">
-              <Jeep size={32} weight="duotone" />
-              <span className="text-gray-400">LUXE</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap   pb-12 mx-4 mt-6  lg:mx-32   md:gap-1 lg:gap-4">
+          <div className="pb-12 mx-4 mt-10  lg:mx-24   md:gap-1 lg:gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {voitures.map((voiture) => {
               return <Model voiture={voiture} key={voiture.nom} />;
             })}
           </div>
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 

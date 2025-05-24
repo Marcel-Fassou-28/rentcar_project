@@ -55,8 +55,8 @@ class Voiture extends Model
         'price',
         'statut',
         'moteur',
-        'transmission'
-        
+        'transmission',
+        'car_photo',
     ];
 
     /**

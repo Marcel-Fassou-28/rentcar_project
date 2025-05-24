@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\ValidationException;
 
-class VoitureRequest extends FormRequest
+class UpdateVoitureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -66,23 +66,5 @@ class VoitureRequest extends FormRequest
         ];
     }
 
-    /**
-     * Handle a failed validation attempt.
-     *
-     * @param Validator $validator
-     * @return void
-     * @throws HttpResponseException
-     */
-    protected function failedValidation(Validator $validator): void
-    {
-        $errors = (new ValidationException($validator))->errors();
-
-        throw new HttpResponseException(
-            response()->json([
-                'success' => false,
-                'message' => 'Données invalides',
-                'errors' => $errors,
-            ], 422)
-        );
-    }
+    
 }

@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Voiture;
 use Illuminate\Http\Request;
 use App\Http\Requests\VoitureRequest;
+use Illuminate\Support\Facades\Storage;
 
 class VoitureController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $voitures = Voiture::select(
+        $category = $request->query('category');
+        $query = Voiture::select(
             'id',
             'car_name',
             'car_model',
@@ -24,64 +26,29 @@ class VoitureController extends Controller
             'transmission',
             'statut',
             'car_photo'
-        )
-            ->get();
-        // ->groupBy('car_categorie');
+        );
+        if ($category) {
+            $query->where('car_categorie', $category);
+        }
+        $voitures = $query->get();
 
-        if ($voitures) {
+        if ($voitures->isNotEmpty()) {
+            foreach ($voitures as $voiture) {
+                $photoUrl = $voiture->car_photo && Storage::disk('public')->exists('voitures/' . $voiture->car_photo)
+                    ? url('storage/voitures/' . $voiture->car_photo)
+                    : null;
+                $voiture->car_photo = $photoUrl;
+            }
             return response()->json([
                 'success' => true,
                 'data' => $voitures
-            ], 200);
+            ], 200);  
         } else {
             return response()->json([
                 'success' => false,
                 'data' => $voitures
             ], 200);
         }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $voiture = Voiture::create($request->validated());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Voiture créée avec succès',
-            'data' => $voiture
-        ], 201);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(VoitureRequest $request, string $id)
-    {
-        $voiture = Voiture::findOrFail($id);
-        $voiture->update($request->validated());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Voiture mise à jour avec succès',
-            'data' => $voiture
-        ], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $voiture = Voiture::findOrFail($id);
-        $voiture->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Voiture supprimée avec succès'
-        ], 200);
     }
 
     /**

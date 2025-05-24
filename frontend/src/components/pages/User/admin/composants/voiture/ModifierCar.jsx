@@ -1,326 +1,444 @@
+
+import { useEffect, useState } from "react";
 import Sidebar from "../Sidebar";
 import instance from "../../../../../config/Axios";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { s } from "framer-motion/client";
+import { Car, CarFront, Euro, Fuel, Hash, Layers, Settings, Sparkle, Tag, User } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+// Options pour les champs select
+const FORM_OPTIONS = {
+  models: ["Série 3", "X5", "Classe C", "A4", "RAV4", "Civic"],
+  categories: ["berline", "suv", "compact", "luxe", "citadine", "4x4"],
+  moteurs: ["essence", "diesel", "hybride", "électrique"],
+  transmissions: ["automatique", "manuelle"],
+};
+
+const formatOption = (value) =>
+  value ? value.charAt(0).toUpperCase() + value.slice(1) : "Non spécifié";
+
 
 const ModifierCar = () => {
-  const models = [
-    "Série 3",
-    "X5",
-    "X3",
-    "Série 1",
-    "M4",
-    "Classe C",
-    "GLC",
-    "Classe A",
-    "AMG GT",
-    "GLE",
-    "A3",
-    "A4",
-    "Q5",
-    "RS6",
-    "Q7",
-    "Yaris",
-    "Corolla",
-    "RAV4",
-    "Land Cruiser",
-    "CH-R",
-    "Civic",
-    "CR-V",
-    "Jazz",
-    "HR-V",
-    "e:Ny1",
-  ];
-
-  const [formData, setFormData] = useState({
-    immatriculation: "",
-    brand: "",
-    car_model: "",
-    car_categorie: "",
-    price: 0,
-    transmission: "",
-    moteur: "",
-    car_photo: "",
-    car_name: "",
-    statut: "",
-  });
-
-  const [error, setError] = useState("");
-  let state = 0;
-  formData.brand = formData.brand
-    ? formData.brand
-    : formData.car_name
-    ? formData.car_name.split("-")[0]
-    : "";
-  formData.car_name = formData.brand + "-" + formData.car_model;
-
+  const [formData, setFormData] = useState({immatriculation: "", car_name: "", car_model: "", car_categorie: "", price: "", transmission: "", moteur: "", car_photo: null});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [urlImg, setUrlImg] = useState(null);
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const [carPhoto, setCarPhoto] = useState(null);
-  const { id } = useParams();
-
   useEffect(() => {
-    instance
-      .get(`/admin/voitures/show/${id}`)
-      .then((res) => {
-        setFormData(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    const fetchCarData = async () => {
+      try {
+        const res = await instance.get(`/admin/voitures/show/${id}`);
+        const { data } = res.data;
+        setFormData({
+          immatriculation: data.immatriculation || '',
+          car_name: data.car_name || '',
+          car_model: data.car_model || '',
+          car_categorie: data.car_categorie || '',
+          price: data.price || '',
+          transmission: data.transmission || '',
+          moteur: data.moteur || '',
+          car_photo: data.car_photo, // File is not fetched, only URL
+        });
+        setUrlImg(data.car_photo);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+      } catch (err) {
+        console.error('Error fetching car data:', err);
+        setError('Erreur lors du chargement des données de la voiture.');
+      }
+    }
+    fetchCarData();
+  }, [id]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        car_photo: { file, preview: URL.createObjectURL(file) },
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      formData.car_photo = carPhoto ? carPhoto : formData.car_photo;
-      formData.price = parseInt(formData.price);
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
 
-      const response = await instance.patch(
-        `/admin/voitures/update/${id}`,
-        formData
-      );
-     
+    const requiredFields = ["car_name","immatriculation","car_model","car_categorie","price","transmission","moteur"];
+    if (requiredFields.some((field) => !formData[field])) {
+      setError("Tous les champs requis doivent être remplis.");
+      setLoading(false);
+      return;
+    }
 
-      if (response.data) {
-        state = 1;
+    if(formData.car_photo?.file) {
+      const base64Image = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(formData.car_photo.file);
+      });
+  
+      formData.car_photo = {
+        name: formData.car_photo.file.name,
+        data: base64Image, // Contient l'image en base64 (ex. "data:image/jpeg;base64,...")
+      };
 
-
-        navigate("/admin/voitures");
-      ;
-      } else {
-        state = 2;
+    } else {
+      formData.car_photo = {
+        name: null,
+        data: null,
       }
+    }
+    try {
+      await instance.patch(`admin/voitures/update/${id}`, formData);
+      setSuccess("Voiture mise à jour avec succès !");
+      navigate('/admin/models');
     } catch (err) {
-      console.log(err);
-      setError(
-        err.response?.data?.errors.message || "Une erreur est survenue."
-      );
-      console.log(error);
+      setError(err.response?.data?.message || "Erreur lors de la mise à jour de la voiture.");
+    } finally {
+      setLoading(false);
+      window.scrollTo({top: 0, behavior: 'smooth'})
     }
   };
-
-  return (
-    <div className="flex  pt-16 ">
+return (
+    <div className="flex bg-gradient-to-br from-gray-50 to-gray-200 pt-16">
       <Sidebar />
-
-      <div className=" mb-4  flex-[4] flex-col items-center lg:flex-row ">
-       
-        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%] md:w-[80%] lg:w-[97%] lg:mx-auto  ">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-            <h1 className="text-3xl font-bold mb-2">Modifier la  Voiture </h1>
-            <p className="text-orange-100">
-              Vueiller modifiere les informations de la voiture dans le
-              formulaire ci dessous
-            </p>
+      <div className="w-full flex flex-col">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Bienvenue</h1>
+              <p className="text-orange-100">Ajoutez des voitures pour une clientèle accrue</p>
+            </div>
+            <div className="mt-4 md:mt-0 flex items-center">
+              <div className="bg-white text-orange-600 p-2 rounded-full">
+                <CarFront size={24} />
+              </div>
+            </div>
           </div>
         </div>
-         <div className="  flex flex-col lg:flex-row  gap-4 ">
-        {formData.car_photo &&(
-          <div className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[45%] lg:mx-4 lg:flex-col  rounded flex gap-4 p-8  lg:mt-6 mt-2 ">
-            <img
-              src={formData.car_photo}
-              alt="photo voiture"
-              className="w-[300px] h-[300px] m-auto object-cover"
-            />
-            <div className="flex flex-col flex-wrap gap-4">
-              <h1 className="text-2xl font-bold">Infos</h1>
-              <p>
-                <strong>Immatriculation :</strong> {formData.immatriculation}
-              </p>
-              <p>
-                <strong>Nom de la voiture :</strong> {formData.car_name}
-              </p>
-              <p>
-                <strong>Marque :</strong> {formData.brand}
-              </p>
-              <p>
-                <strong>Modèle :</strong> {formData.car_model}
-              </p>
-              <p>
-                <strong>Catégorie :</strong> {formData.car_categorie}
-              </p>
-              <p>
-                <strong>Moteur :</strong> {formData.moteur}
-              </p>
-              <p>
-                <strong>Transmission :</strong> {formData.transmission}
-              </p>
-              <p>
-                <strong>Prix :</strong> {formData.price}
-              </p>
-            </div>
-          </div>
-        )}
-         <form
-          method="post"
+
+        {/* Messages de statut */}
+        {success && (
+          <div className=" flex mb-6 max-w-full rounded-lg bg-green-100 mx-auto p-4 text-green-500 shadow-md w-[95%]">{success}</div>
+        )} {error && (<div className=" flex mb-6 max-w-full rounded-lg bg-red-100 p-4 text-red-700 shadow-md mx-auto w-[95%]">{error}</div>)}
+
+        {/* Aperçu de la voiture */}
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 mx-auto my-4 w-full flex flex-col md:flex-row lg:w-[95%] justify-between">
+
+        {/* Formulaire */}
+        <form
           onSubmit={handleSubmit}
-          className=" flex flex-wrap justify-between  shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%]  lg:w-[50%] rounded flex gap-4 p-8  lg:mt-6 lg:mx-auto mt-16  "
+          className="max-w-xl rounded-xl bg-white p-4 shadow-lg w-[48%]"
         >
-          {error && (
-            <div className="text-red-600 text-center">
-              <p>{error}</p>
+          <h2 className="mb-4 font-semibold text-gray-900 text-xl  uppercase text-center">Ajouter une voiture</h2>
+          
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Champ Nom de la voiture */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="car_name" className="text-sm font-medium text-gray-700">
+                Nom de la voiture <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="car_name"
+                name="car_name"
+                value={formData.car_name}
+                onChange={handleInputChange}
+                placeholder="Ex: RAV4"
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              />
             </div>
-          )}
 
-          <div className="w-full flex flex-col gap-2">
-            <label htmlFor="immatriculation">
-              Immatriculation de la voiture{" "}
-              <span className="text-red-600">*</span>
-            </label>
-            <input
-              type="text"
-              name="immatriculation"
-              value={formData.immatriculation}
-              placeholder="Immatriculation de la voiture"
-              onChange={handleChange}
-              required
-              className="px-2 w-full flex flex-wrap py-2 font-light text-gray-400 border"
-            />
+            {/* Champ Immatriculation */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="immatriculation" className="text-sm font-medium text-gray-700">
+                Immatriculation <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="immatriculation"
+                name="immatriculation"
+                value={formData.immatriculation}
+                onChange={handleInputChange}
+                placeholder="Ex: AB-123-CD"
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              />
+            </div>
+
+            {/* Champ Modèle */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="car_model" className="text-sm font-medium text-gray-700">
+                Modèle <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="car_model"
+                name="car_model"
+                value={formData.car_model}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner un modèle</option>
+                {FORM_OPTIONS.models.map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Champ Catégorie */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="car_categorie" className="text-sm font-medium text-gray-700">
+                Catégorie <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="car_categorie"
+                name="car_categorie"
+                value={formData.car_categorie}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner une catégorie</option>
+                {FORM_OPTIONS.categories.map((car_categorie) => (
+                  <option key={car_categorie} value={car_categorie}>
+                    {formatOption(car_categorie)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Champ Moteur */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="moteur" className="text-sm font-medium text-gray-700">
+                Moteur <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="moteur"
+                name="moteur"
+                value={formData.moteur}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner un moteur</option>
+                {FORM_OPTIONS.moteurs.map((moteur) => (
+                  <option key={moteur} value={moteur}>
+                    {formatOption(moteur)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Champ Transmission */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="transmission" className="text-sm font-medium text-gray-700">
+                Transmission <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="transmission"
+                name="transmission"
+                value={formData.transmission}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner une transmission</option>
+                {FORM_OPTIONS.transmissions.map((transmission) => (
+                  <option key={transmission} value={transmission}>
+                    {formatOption(transmission)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Champ Prix */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="price" className="text-sm font-medium text-gray-700">
+                Prix (MAD) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                placeholder="Ex: 250"
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            {/* Champ Photo */}
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label htmlFor="car_photo" className="text-sm font-medium text-gray-700">
+                Photo <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                id="car_photo"
+                name="car_photo"
+                accept="image/png, image/jpeg, image/jpg"
+                onChange={handleFileChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none"
+              />
+            </div>
           </div>
 
-          <div className="w-full flex flex-col gap-2">
-            <label>
-              Marque<span className="text-red-600">*</span> :
-            </label>
-            <select
-              name="brand"
-              value={formData.brand}
-              required
-              onChange={handleChange}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            >
-              <option value="">Sélectionner une marque</option>
-
-              <option value="BMW">BMW</option>
-              <option value="Mercedes">Mercedes</option>
-              <option value="Audi">Audi</option>
-              <option value="Toyota">Toyota</option>
-              <option value="Honda">Honda</option>
-            </select>
-          </div>
-
-          <div className="w-full flex flex-col gap-2">
-            <label>
-              Modèle<span className="text-red-600">*</span> :
-            </label>
-            <select
-              value={formData.car_model}
-              name="car_model"
-              required
-              onChange={handleChange}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            >
-              <option value="">Sélectionner un modèle</option>
-              {models.map((model) => (
-                <option key={model}>{model}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* <div className="w-full flex flex-col gap-2">
-                <label htmlFor="car_name">Nom de la voiture <span className="text-red-600">*</span></label>
-                 <input type="text" name="car_name" placeholder="Nom de la voiture Marque-Modèle"
-                 required
-                 
-                 onChange={handleChange}
-                 className="px-2 w-full py-2 font-light text-gray-400 border" /> 
-            </div> */}
-
-          <div className="w-full flex flex-col gap-2">
-            <label>
-              Catégorie<span className="text-red-600">*</span> :
-            </label>
-            <select
-              required
-              value={formData.car_categorie}
-              name="car_categorie"
-              onChange={handleChange}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            >
-              <option value="">Sélectionner une catégorie</option>
-              <option value="berline">Berline</option>
-              <option value="SUV">SUV</option>
-              <option value="compact">Compact</option>
-              <option value="luxe">Luxe</option>
-              <option value="citadine">Citadine</option>
-              <option value="4x4">4x4</option>
-            </select>
-          </div>
-          <div className="w-full flex flex-col gap-2">
-            <label>Moteur :</label>
-            <select
-              required
-              name="moteur"
-              value={formData.moteur}
-              onChange={handleChange}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            >
-              <option value="">Sélectionner un moteur</option>
-              <option value="essence">Essence</option>
-              <option value="diesel">Diesel</option>
-              <option value="hybride">Hybride</option>
-              <option value="électrique">Électrique</option>
-            </select>
-          </div>
-
-          <div className="w-full flex flex-col gap-2">
-            <label>Transmission :</label>
-            <select
-              required
-              name="transmission"
-              value={formData.transmission}
-              onChange={handleChange}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            >
-              <option value="">Sélectionner une transmission</option>
-              <option value="automatique">Automatique</option>
-              <option value="manuelle">Manuelle</option>
-            </select>
-          </div>
-
-          <div className="w-full flex flex-col gap-2">
-            <label>Prix :</label>
-            <input
-              required
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              placeholder="Prix de la voiture"
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            />
-          </div>
-          <div className="w-full flex flex-col gap-2">
-            <label>Photo :</label>
-            <input
-              type="file"
-              name="car_photo"
-              onChange={(event) => {
-                if (event.target.files && event.target.files[0]) {
-                  setCarPhoto(URL.createObjectURL(event.target.files[0]));
-                }
-              }}
-              className="px-2 w-full py-2 font-light text-gray-400 border"
-            />
-          </div>
-          <div className="flex justify-center">
+          {/* Bouton de soumission */}
+          <div className="mt-8 flex justify-center">
             <button
               type="submit"
-              className="bg-orange-500 text-xl p-2 rounded transition duration-200 hover:bg-orange-600 uppercase text-white font-semibold "
+              disabled={loading}
+              className={`flex items-center gap-2 rounded-lg px-6 py-3 font-semibold text-white uppercase transition duration-300 ${
+                loading
+                  ? "bg-orange-300 cursor-not-allowed"
+                  : "bg-orange-600 hover:bg-orange-700"
+              }`}
             >
-              Ajouter la voiture
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-orange-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25" cx="12" cy="12"
+                      r="10" stroke="currentColor" strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Ajout en cours...
+                </>
+              ) : (
+                "Mettre à Jour la voiture"
+              )}
             </button>
           </div>
         </form>
-      </div>
+
+      <div className="mb-8 w-full max-w-[48%] rounded-xl bg-white p-4 shadow-lg">
+      <h2 className="mb-6 text-center text-xl font-semibold text-gray-800 uppercase">
+        Aperçu de la voiture
+      </h2>
+      <div className="flex flex-col gap-6 justify-center items-center">
+        {/* Image de la voiture */}
+        <div className="flex w-full">
+          {formData.car_photo?.preview ? (
+            <img
+              src={formData.car_photo.preview}
+              alt="Prévisualisation de la voiture"
+              className="h-48 w-full rounded-lg object-cover shadow-sm"
+              aria-label="Image de la voiture"
+            />
+          ) : (
+              <img src={urlImg} alt="" className="h-48 w-full rounded-lg object-cover shadow-sm" aria-label="Image de la voiture"/>
+            
+          )}
+        </div>
+
+        {/* Informations de la voiture */}
+        <div className="w-full">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 items-center justify-center">
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Hash className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Immatriculation</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.immatriculation || "Non spécifié"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Car className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Nom</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.car_name || "Non spécifié"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Layers className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Modèle</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.car_model || "Non spécifié"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Sparkle className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Catégorie</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formatOption(formData.car_categorie)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Fuel className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Moteur</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formatOption(formData.moteur)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Settings className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Transmission</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formatOption(formData.transmission)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <Euro className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Prix</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.price ? `${formData.price} MAD` : "Non spécifié"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+
+    </div>        
+  </div>
+</div>
   );
 };
 

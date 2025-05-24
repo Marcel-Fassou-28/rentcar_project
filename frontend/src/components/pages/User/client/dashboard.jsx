@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import SidebarClient from './SidebarClient';
-import { User, Car, Calendar, Bell, Settings } from 'lucide-react';
+import { User, Car, Calendar, Bell, Settings, CarFront } from 'lucide-react';
 import { motion } from 'framer-motion';
-import axios from './../../../config/Axios';
+import instance from './../../../config/Axios';
 import { Link } from 'react-router-dom';
+import CountUp from 'react-countup';
 
 const DashboardClient = () => {
   const [userName, setUserName] = useState('');
   const [reservations, setReservations] = useState([]);
+  const [totalReservation, setTotalReservation] = useState(0)
+  const [nbrVoitureReserve, setNbrVoitureReserve] = useState(0)
   const [stats, setStats] = useState({
     reservationsActives: 0,
     reservationsPassees: 0,
@@ -29,9 +32,12 @@ const DashboardClient = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`/user/dashboard/${parsedUser.id}`);
+        const response = await instance.get(`/user/dashboard/${parsedUser.id}`);
+        console.log(response.data)
         if (response.data.success) {
-          setUserName(response.data.name);
+          setUserName(response.data.client.nom);
+          setTotalReservation(response.data.reservations.total);
+          setNbrVoitureReserve(response.data.totalVoiture)
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du nom utilisateur :', error);
@@ -40,7 +46,7 @@ const DashboardClient = () => {
 
     const fetchReservations = async () => {
       try {
-        const res = await axios.get('/user/reservations/my');
+        const res = await instance.get('/user/reservations/my');
         setReservations(res.data);
         const actives = res.data.filter(r => r.statut !== 'annulée' && r.statut !== 'expiré');
         const past = res.data.filter(r => r.statut === 'expiré');
@@ -88,8 +94,8 @@ const DashboardClient = () => {
                 <Car className="text-blue-600" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Réservations actives</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.reservationsActives}</p>
+                <p className="text-gray-500 text-sm">Réservations en attente</p>
+                <p className="text-2xl font-bold text-gray-800"><CountUp end={stats.reservationsActives} duration={'1'}/></p>
               </div>
             </motion.div>
 
@@ -100,7 +106,7 @@ const DashboardClient = () => {
               </div>
               <div>
                 <p className="text-gray-500 text-sm">Réservations passées</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.reservationsPassees}</p>
+                <p className="text-2xl font-bold text-gray-800"><CountUp end={stats.reservationsPassees} duration={'1'}/></p>
               </div>
             </motion.div>
 
@@ -110,19 +116,19 @@ const DashboardClient = () => {
                 <Settings className="text-purple-600" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Points fidélité</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.pointsFidelite}</p>
+                <p className="text-gray-500 text-sm">Total Réservation</p>
+                <p className="text-2xl font-bold text-gray-800"><CountUp end={totalReservation} duration={'1'} /></p>
               </div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
               className="bg-white rounded-xl shadow p-5 flex items-center">
               <div className="rounded-full bg-red-100 p-3 mr-4">
-                <Bell className="text-red-600" size={24} />
+                <CarFront className="text-red-600" size={24} />
               </div>
               <div>
-                <p className="text-gray-500 text-sm">Notifications</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.notificationsNonLues}</p>
+                <p className="text-gray-500 text-sm">Nombres de voitures reservés</p>
+                <p className="text-2xl font-bold text-gray-800"><CountUp end={nbrVoitureReserve} duration={'1'} /></p>
               </div>
             </motion.div>
           </div>

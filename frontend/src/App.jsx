@@ -50,15 +50,6 @@ function App() {
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         
-
-        <Route path='/:role/my/profil/:id' element={<ProtectedRoute><ProfilClient /></ProtectedRoute>} />
-
-        {/* Routes admin (à adapter si nécessaire) */}
-        
-     
-        
-        
-       
         {/* Pour l'admin */}
          <Route path = '/admin/voitures' element={<ProtectedRoute allowedRoles={'admin'}><Voiture/></ProtectedRoute>} />
         <Route path='/admin/voitures/new' element={<ProtectedRoute allowedRoles={'admin'}><NewCar/></ProtectedRoute>} />
