@@ -5,7 +5,7 @@ import { User, Car, Calendar, Home, Bell, LogOut, Settings,ChevronRight,Menu,X} 
 
 const SidebarClient = () => {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const user = localStorage.getItem('user');
@@ -51,7 +51,7 @@ const menuItems = [
   return (
     <>
 
-      {/* Sidebar */}
+            {/* Sidebar */}
       <motion.aside 
         initial={{ x: -50, opacity: 0 }}
         animate={{ 
@@ -59,12 +59,12 @@ const menuItems = [
           opacity: 1,
           width: isCollapsed ? '80px' : '280px'
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.3  }}
         className={`
-          fixed top-16 left-0 z-30 h-[calc(100vh-4rem)] bg-white shadow-lg
+          relative top-15 left-0 z-10 h-[calc(100vh-4rem)] bg-white shadow-lg
           transform transition-all duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
-          md:relative md:translate-x-0
+           md:translate-x-0
         `}
         style={{ width: isCollapsed ? '80px' : '280px' }}
       >
@@ -88,7 +88,7 @@ const menuItems = [
             </div>
 
             {/* Menu de navigation */}
-            <nav className="mt-6 flex flex-col gap-2">
+            <nav className="mt-6 flex flex-col gap-2 ">
               {menuItems.map((item, index) => {
                 const isActive = location.pathname === item.path;
                 return (

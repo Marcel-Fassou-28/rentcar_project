@@ -29,8 +29,8 @@ const ReservationChart = ({reservationData}) => {
   
 
   return (
-    <div className="shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[96%] m- lg:w-[98%]">
-      <h2 className="text-2xl  m-4 text-gray-500">Reservations Mensuelles</h2>
+    <div className="col-span-2 shadow-gray-200 p-2 w-full max-w-[95%] mx-auto bg-gray-100 shadow-md rounded-lg">
+      <h2 className="text-2xl text-center uppercase  font-semibold m-4 text-black">Reservations Mensuelles</h2>
       <ResponsiveContainer width="90%" height={400}>
         <BarChart width={700} height={250} data={reservationData}>
           <CartesianGrid strokeDasharray="3 3" />

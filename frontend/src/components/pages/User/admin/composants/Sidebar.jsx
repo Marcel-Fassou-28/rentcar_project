@@ -6,7 +6,7 @@ import { User, Car, Calendar, Home, LogOut, ChevronRight,Menu,X, CarFront,User2}
 
 const Sidebar = () => {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const user = localStorage.getItem('user');
@@ -39,14 +39,8 @@ const menuItems = [
   { name: 'Mon Profil', icon: <User size={20} />, path: `/${parsedUser.role}/my/profil/${parsedUser.id}` },
 ];
 
-
-
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
-  };
-
-  const toggleMobileSidebar = () => {
-    setIsMobileOpen(!isMobileOpen);
   };
 
   return (
@@ -62,10 +56,10 @@ const menuItems = [
         }}
         transition={{ duration: 0.3  }}
         className={`
-          fixed top-16 left-0 z-10 h-[calc(100vh-4rem)] bg-white shadow-lg
+          relative top-16 left-0 z-10 h-[calc(100vh-4rem)] bg-white shadow-lg
           transform transition-all duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
-          md:relative md:translate-x-0
+           md:translate-x-0
         `}
         style={{ width: isCollapsed ? '80px' : '280px' }}
       >

@@ -51,7 +51,7 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="fixed top-0 w-full py-3 bg-white flex items-center justify-between shadow-sm h-16 z-20 px-4">
+    <nav className="fixed top-0 w-full py-3 bg-white flex items-center justify-between shadow-sm h-16 z-50 px-4">
       {/* Hamburger (mobile) */}
       <div className="md:hidden flex items-center">
         <button

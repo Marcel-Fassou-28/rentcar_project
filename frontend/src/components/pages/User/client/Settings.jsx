@@ -30,7 +30,7 @@ function Setting() {
   };
 
   return (
-    <div className="pt-16 flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen">
+    <div className="pt-16 bg-gradient-to-b from-gray-50 to-gray-100 flex">
       <SidebarClient />
       <main className="flex-1 p-6">
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white mx-auto my-4 w-[95%]">

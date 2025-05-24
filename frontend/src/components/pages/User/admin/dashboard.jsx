@@ -13,6 +13,7 @@ import { useAuth } from "../../../AuthContext";
 import { useEffect, useState } from "react";
 import instance from "../../../config/Axios";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Dashboard = () => {
   const {user} = useAuth();
@@ -129,8 +130,8 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
   const calendar = [
     {
       icon: (
-        <div className="bg-orange-300 rounded-full w-12 h-12  flex items-center justify-center">
-          <CalendarTodayOutlinedIcon className="text-blue-700" />
+        <div className="rounded-full bg-blue-100 p-3 mr-4">
+          <CalendarTodayOutlinedIcon className="text-blue-600" size={24} />
         </div>
       ),
 
@@ -141,8 +142,8 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
     },
     {
       icon: (
-        <div className="bg-orange-300 rounded-full w-12 h-12   flex items-center justify-center">
-          <AirportShuttleIcon className="text-green-500" />
+        <div className="bg-green-300 rounded-full p-3 mr-4">
+          <AirportShuttleIcon className="text-green-500" size={24} />
         </div>
       ),
       title: "Vehicules",
@@ -152,8 +153,8 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
     },
     {
       icon: (
-        <div className="bg-orange-300 rounded-full w-12 h-12  flex items-center justify-center">
-          <GroupOutlinedIcon className="text-yellow-700" />
+        <div className="bg-yellow-300 rounded-full p-3 mr-4">
+          <GroupOutlinedIcon className="text-yellow-700" size={24} />
         </div>
       ),
       title: " Clients",
@@ -163,8 +164,8 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
     },
     {
       icon: (
-        <div className="bg-orange-300 rounded-full w-12 h-12 flex items-center justify-center">
-          <MonetizationOnOutlinedIcon className="text-pink-500" />
+        <div className="bg-pink-300 rounded-full p-3 mr-4">
+          <MonetizationOnOutlinedIcon className="text-pink-500" size={24}/>
         </div>
       ),
       title: "Revenus",
@@ -177,12 +178,13 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
 
 
   return (
-    <div className="pt-16  bg-gradient-to-b from-gray-50 to-gray-100 flex ">
-      <Sidebar  />
-      <div className=" w-full flex flex-col">
-        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+    <div className="pt-16 bg-gradient-to-b from-gray-50 to-gray-100 flex">
+      <Sidebar  /> 
+      <main className=" flex-1 p-6 w-[96%]">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-7xl mx-auto">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-full">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <div>
+              <div className="flex flex-col items-center md:items-start">
                 <h1 className="text-3xl font-bold mb-2">Bienvenue</h1>
                 <p className="text-orange-100">Votre espace personnel RentCar</p>
               </div>
@@ -197,18 +199,21 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
             </div>
           </div>
 
-        <div className="flex flex-wrap items-center justify-center   md:justify-between  w-[96%] lg:w-[98%]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {calendar.map((unit) => (
             <Actu icons={unit} key={unit.title} />
           ))}
         </div>
-        <div className=" px-4  flex flex-col flex-wrap lg:flex-row lg:items-center w-[96%] lg:w-[98%]">
+        <div className="grid grid-cols-1 gap-2 w-full bg-white shadow-md mx-auto rounded-md py-4">
           <ReservationChart reservationData={reservationData} />
-          <RevenuChart revenueData={revenueData} />
-          <EtatCarChar data={stateCar} />
+          <div className="grid grid-cols-1 mt-4 lg:grid-cols-2 gap-4 w-full items-center justify-start lg:px-3">
+            <RevenuChart revenueData={revenueData} />
+            <EtatCarChar data={stateCar} />
+          </div>
           <HistoriqueReservations  recentReservations={recentReservation}/>
         </div>
-      </div>
+        </motion.div>
+      </main>
     </div>
   );
 }

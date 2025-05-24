@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 import instance from './../../../config/Axios';
 import { Link } from 'react-router-dom';
 import CountUp from 'react-countup';
+import { useAuth } from '../../../AuthContext';
+import Sidebar from '../admin/composants/Sidebar';
 
 const DashboardClient = () => {
-  const [userName, setUserName] = useState('');
   const [reservations, setReservations] = useState([]);
   const [totalReservation, setTotalReservation] = useState(0)
   const [nbrVoitureReserve, setNbrVoitureReserve] = useState(0)
@@ -35,7 +36,6 @@ const DashboardClient = () => {
         const response = await instance.get(`/user/dashboard/${parsedUser.id}`);
         console.log(response.data)
         if (response.data.success) {
-          setUserName(response.data.client.nom);
           setTotalReservation(response.data.reservations.total);
           setNbrVoitureReserve(response.data.totalVoiture)
         }
@@ -59,21 +59,20 @@ const DashboardClient = () => {
         console.error("Erreur lors du chargement des réservations :", err);
       }
     };
-
     fetchUserData();
     fetchReservations();
   }, []);
 
   return (
-    <div className="pt-16 flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-200 min-h-screen">
+    <div className="pt-16 bg-gradient-to-b from-gray-50 to-gray-100 flex">
       <SidebarClient />
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 w-[89%]">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="max-w-7xl mx-auto">
 
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 mb-6 text-white">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Bienvenue, {userName}</h1>
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 mb-6 text-white w-full">
+            <div className="flex flex-col md:flex-row justify-center md:justify-between items-center">
+              <div className='flex flex-col justify-center items-center md:items-start'>
+                <h1 className="text-3xl font-bold mb-2">Bienvenue, {parsedUser.nom}</h1>
                 <p className="text-orange-100">Votre espace personnel RentCar</p>
               </div>
               <div className="mt-4 md:mt-0 flex items-center">
@@ -90,6 +89,7 @@ const DashboardClient = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
               className="bg-white rounded-xl shadow p-5 flex items-center">
+                
               <div className="rounded-full bg-blue-100 p-3 mr-4">
                 <Car className="text-blue-600" size={24} />
               </div>

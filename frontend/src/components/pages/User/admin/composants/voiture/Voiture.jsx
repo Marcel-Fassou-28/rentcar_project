@@ -3,6 +3,7 @@ import instance from "../../../../../config/Axios";
 import { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
+import { motion } from "framer-motion";
 import {
   ResponsiveContainer,
   PieChart,
@@ -169,12 +170,13 @@ const Voiture = () => {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className="flex  pt-16 bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="flex pt-16 bg-gradient-to-b from-gray-50 to-gray-100">
       <Sidebar />
-      <div className="flex flex-[4]  flex-col items-center  ">
-        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+      <main className="flex-1 px-2 w-full">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full bg-white shadow-sm rounded-md">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-full">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <div>
+              <div className="flex flex-col items-center md:items-start">
                 <h1 className="text-3xl font-bold mb-2">Les Voitures</h1>
                 <p className="text-orange-100">Gérer vos voitures en toute sécurité</p>
               </div>
@@ -188,9 +190,9 @@ const Voiture = () => {
               </div>
             </div>
           </div>
-
-        <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%]  lg:w-[95%] ">
-          <h2 className="text-2xl  m-4 text-gray-500">Les Voitures</h2>
+        
+        <div className="shadow-gray-200 bg-gray-100 shadow-md mt-2 overflow-x-auto">
+          <h2 className="text-2xl text-center uppercase  font-semibold m-4 text-black">Les Voitures</h2>
 
           <Paper
             sx={{ height: 400, width: "100%" }}
@@ -209,10 +211,8 @@ const Voiture = () => {
                 setValues((values) => {
                   var newValues = [...values];
                   if (values.includes(params.row.id)) {
-                    // Supprimer l'ID si la ligne est déjà sélectionnée
                     newValues = values.filter((id) => id !== params.row.id);
                   } else {
-                    // Ajouter l'ID si la ligne n'était pas sélectionnée
                     newValues = [...values, params.row.id];
                   }
                   return newValues;
@@ -222,17 +222,16 @@ const Voiture = () => {
               }}
               sx={{ border: 0 }}
             />
-          {console.log(values)}
           </Paper>
           {values.length > 0 && (
             <div className="flex gap-4 justify-center">
-              <Link to={`voitures/delete/${values[0]}`} className="m-4 bg-red-600 font-semibold p-2 rounded-md text-white">
+              <Link to={`/admin/voitures/delete/${values[0]}`} className="m-4 bg-red-600 font-semibold p-2 rounded-md text-white">
                 Supprimer
               </Link>
 
               {values.length < 2 && (
                 <Link
-                  to={`voitures/modifyCar/${values[0]}`}
+                  to={`/admin/voitures/modifyCar/${values[0]}`}
                   className="m-4 bg-orange-500 p-2 rounded-md font-semibold text-white"
                 >
                   Modifier
@@ -241,12 +240,12 @@ const Voiture = () => {
             </div>
           )}
         </div>
-        <div className="flex flex-col lg:flex-row items-center w-full lg:w-[95%]">
-          <div className=" shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
-            <h2 className="text-2xl  m-4 text-gray-500">Etats Des Voitures</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 bg-white py-4 px-2">
+          <div className=" col-span-1 shadow-gray-200 bg-gray-100 shadow-md mt-2 overflow-x-auto">
+            <h2 className="text-2xl text-center uppercase  font-semibold m-4 text-black">Etats Des Voitures</h2>
 
             <Paper className="flex justify-center items-center w-full">
-              <ResponsiveContainer width="80%" height={300} className="my-4">
+              <ResponsiveContainer width="80%" height={320} className="my-4">
                 <PieChart width={500} height={500}>
                   <Pie
                     data={stateCar}
@@ -269,12 +268,12 @@ const Voiture = () => {
             </Paper>
           </div>
 
-          <div className="shadow-[0_0_15px_rgba(0,0,0,0.1)] w-[90%] m-4 lg:w-[98%]">
-            <h2 className="text-2xl  m-4 text-gray-500">
+          <div className="col-span-1 shadow-gray-200 bg-gray-100 shadow-md mt-2 overflow-x-auto">
+            <h2 className="text-2xl text-center uppercase  font-semibold m-4 text-black">
               Voitures par Categorie
             </h2>
             <Paper className="flex justify-center items-center w-full">
-              <ResponsiveContainer width="90%" height={300}>
+              <ResponsiveContainer width="90%" height={350}>
                 <BarChart width={700} height={300} data={category}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
@@ -287,7 +286,8 @@ const Voiture = () => {
             </Paper>
           </div>
         </div>
-      </div>
+        </motion.div>
+      </main>
     </div>
   );
 };

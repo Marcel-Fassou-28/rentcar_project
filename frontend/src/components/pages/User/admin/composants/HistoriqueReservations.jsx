@@ -9,52 +9,10 @@ import {
 } from "@mui/material";
 import { col } from "framer-motion/client";
 const HistoriqueReservations = ({recentReservations}) => {
-  // const recentReservations = [
-  //   {
-  //     id: "RES-2587",
-  //     client: "Martin Dubois",
-  //     voiture: "Renault Clio",
-  //     debut: "18/05/2025",
-  //     fin: "25/05/2025",
-  //     status: "En cours",
-  //   },
-  //   {
-  //     id: "RES-2586",
-  //     client: "Sophie Lefebvre",
-  //     voiture: "Peugeot 308",
-  //     debut: "17/05/2025",
-  //     fin: "19/05/2025",
-  //     status: "En cours",
-  //   },
-  //   {
-  //     id: "RES-2585",
-  //     client: "Thomas Bernard",
-  //     voiture: "Citroën C3",
-  //     debut: "15/05/2025",
-  //     fin: "22/05/2025",
-  //     status: "En cours",
-  //   },
-  //   {
-  //     id: "RES-2584",
-  //     client: "Émilie Moreau",
-  //     voiture: "Fiat 500",
-  //     debut: "14/05/2025",
-  //     fin: "17/05/2025",
-  //     status: "Terminée",
-  //   },
-  //   {
-  //     id: "RES-2583",
-  //     client: "Alexandre Petit",
-  //     voiture: "BMW Série 1",
-  //     debut: "10/05/2025",
-  //     fin: "15/05/2025",
-  //     status: "Terminée",
-  //   },
-  // ];
 
   return (
-    <div className="shadow-[0_0_15px_rgba(0,0,0,0.1)] my-4 p-2 w-[96%] lg:w-[98%] ">
-      <h2 className="text-2xl  m-4 text-gray-500">Reservation recentes</h2>
+    <div className="col-span-2 shadow-gray-200 bg-gray-100 shadow-md mt-2 overflow-x-auto">
+      <h2 className="text-2xl text-center uppercase  font-semibold m-4 text-black">Reservation recentes</h2>
       <TableContainer component={Paper} >
         <Table sx={{ minWidth: 650 }} aria-label="simple table" >
           <TableHead  >

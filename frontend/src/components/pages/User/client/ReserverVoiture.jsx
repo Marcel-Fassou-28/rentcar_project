@@ -98,7 +98,7 @@ await instance.post('/user/reservations/my', {
   const minEndDate = formData.dateDebut || today;
 
   return (
-    <div className="pt-16 flex flex-col md:flex-row bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
+    <div className="pt-16 bg-gradient-to-b from-gray-50 to-gray-100 flex">
       <SidebarClient />
       <main className="flex-1 p-6 md:p-8">
         <motion.div

@@ -132,7 +132,6 @@ function About() {
           </button>
         </div>
       </div>
-
     </div>
   )
 }

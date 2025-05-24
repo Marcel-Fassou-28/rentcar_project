@@ -31,14 +31,16 @@ import Deconnexion from './components/pages/Deconnexion'
 import DashboardContainer from './components/pages/User/DashboardContainer'
 import Profil from './components/pages/User/Profil'
 import Reservations from './components/pages/User/admin/composants/Reservations/Reservations'
+import Sidebar from './components/pages/User/admin/composants/Sidebar'
 
 
 
 
 function App() {
   return (
-    <>
+    <div>
       <Navbar />
+    <div className='bg-gradient-to-b from-gray-50 to-gray-100'>
       <Routes>
         
         <Route path='/' element={<Home />} />
@@ -64,6 +66,7 @@ function App() {
         {/* Routes client sécurisées */}
         <Route path='/client/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
         <Route path='/client/reserver/:id' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
+        <Route path='/client/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
         <Route path='/client/settings/:id' element={<ProtectedRoute allowedRoles={'client'}><Setting /></ProtectedRoute>} />
 
         {/* Routes communes */}
@@ -78,8 +81,9 @@ function App() {
         <Route path='/deconnexion' element={<ProtectedRoute allowedRoles={['client', 'admin']}><Deconnexion /></ProtectedRoute>} />
 
       </Routes>
+    </div>
     <FooterSection />
-    </>
+    </div>
   )
 }
 

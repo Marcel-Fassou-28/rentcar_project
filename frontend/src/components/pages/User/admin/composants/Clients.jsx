@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import instance from "../../../../config/Axios";
 import {Users, Calendar, BarChart,User2Icon } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -43,10 +44,11 @@ const Clients = () => {
   return (
     <div className="flex pt-16 bg-gradient-to-b from-gray-50 to-gray-100">
       <Sidebar />
-      <div className="w-full">
-        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">
+      <main className="flex-1 px-2 w-[88%]">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full bg-white shadow-sm rounded-md">
+        <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-full">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <div>
+              <div className="flex flex-col items-center md:items-start">
                 <h1 className="text-3xl font-bold mb-2">Les Clients</h1>
                 <p className="text-orange-100">Gérer vos clients en toute sécurité</p>
               </div>
@@ -57,8 +59,9 @@ const Clients = () => {
               </div>
             </div>
           </div>
-        <div className="flex flex-col items-center mx-auto my-4 w-[95%]">
-          <div className="  shadow-[0_0_15px_rgba(0,0,0,0.1)] m-4 p-2 w-[90%] lg:w-[98%] ">
+
+        <div className="shadow-gray-200 bg-gray-100 shadow-md mt-2 overflow-x-auto mb-4">
+          <div className=" bg-white m-4 p-2 ">
             <div className="bg-gray-100  p-4">
               <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -162,7 +165,7 @@ const Clients = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </div> 
 
             <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6 mt-4">
               <div className="flex-1 flex justify-between">
@@ -176,7 +179,8 @@ const Clients = () => {
             </div>
           </div>
         </div>
-      </div>
+        </motion.div>
+      </main>
     </div>
   );
 };
