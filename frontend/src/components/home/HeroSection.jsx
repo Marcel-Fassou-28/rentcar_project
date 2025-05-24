@@ -7,7 +7,7 @@ function HeroSection() {
 
 
   return (
-    <div className="relative h-screen w-screen bg-cover bg-center bg-no-repeat -z-20"
+    <div className="relative h-screen w-screen bg-cover bg-center bg-no-repeat z-20"
      style={{ backgroundImage: `url(${Accueil})` }}
      >
 <motion.div

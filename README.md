@@ -140,7 +140,7 @@ npm run dev
 
 Utilisez les identifiants suivants pour vous connecter en tant qu'administrateur :
 - **Email** : `test@contact.com`  
-- **Mot de passe** : `rentcar`
+- **Mot de passe** : `MotDePasseSolide123!`
 
 ## 📸 Aperçu
 

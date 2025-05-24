@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const FORM_OPTIONS = {
   place: ["2", "4", "6", "5"],
   models: ["Série 3", "X5", "Classe C", "A4", "RAV4", "Civic"],
-  categories: ["berline", "suv", "compact", "luxe", "citadine", "4x4"],
+  categories: ["berline", "SUV", "compact", "luxe", "citadine", "4x4"],
   moteurs: ["essence", "diesel", "hybride", "électrique"],
   transmissions: ["automatique", "manuelle"],
 };

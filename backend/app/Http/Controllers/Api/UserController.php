@@ -96,29 +96,6 @@ class UserController extends Controller
             return response()->json(['error' => 'Logout failed'], 500);
         }
     }
- 
-    /**
-     * Pour afficher certaines statistiques à l'accueil
-     */
-    public function home()
-    {
-        $totalUtilisateurs = Utilisateur::count();
-        $totalNotes = Note::count();
-        $totalCommentaires = Note::whereNotNull('commentaire')
-            ->where('commentaire', '!=', '')
-            ->count();
-
-        $moyenneNotes = round(Note::avg('note') ?? 0, 1);
-
-        return response()->json([
-            'utilisateurs' => $totalUtilisateurs,
-            'notes' => [
-                'total' => $totalNotes,
-                'commentaires' => $totalCommentaires,
-                'moyenne' => $moyenneNotes,
-            ],
-        ], 200);
-    }
 
     public function sendResetLinkEmail(Request $request)
     {
@@ -259,11 +236,10 @@ class UserController extends Controller
      */
     public function update(UpdateProfileRequest $request, string $id)
     {
+        dd("yes");
         $validated = $request->validated();
-        $utilisateur = Utilisateur::where('id', $id)
-            ->where('role', 'client')
-            ->first();
-        
+        $utilisateur = Utilisateur::where('id', $id)->first();
+        dd($utilisateur);
         if ($request->has('photo') && $request->photo['name'] && $request->photo['data']) {
                 $photoData = $request->photo['data'];
                 if (!preg_match('/^data:image\/(jpeg|png|jpg);base64,(.+)$/', $photoData, $matches)) {

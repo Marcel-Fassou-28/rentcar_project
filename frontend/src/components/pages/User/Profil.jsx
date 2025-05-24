@@ -145,8 +145,9 @@ const Profil = () => {
         data: null,
       }
     }
-
+  
     try {
+      console.log(formData);
       const response = await axios.patch(`/user/profil/update/${user.id}`, formData);
       setMessage('Profil mis à jour avec succès !');
       setMessageType('success');

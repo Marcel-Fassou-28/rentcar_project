@@ -194,7 +194,7 @@ const handleSearch = (e) => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 truncate max-w-[160px]">
-                        {reservation.voiture.car_name}
+                        {reservation.voiture?.car_name}
                       </p>
                       <p className="text-xs text-gray-500">ID: {reservation.idVoiture}</p>
                     </div>
