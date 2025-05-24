@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import SidebarClient from './SidebarClient';
-import axios from '../../../config/Axios';
+import instance from '../../../config/Axios';
 import { Car, Calendar, Check, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -18,10 +18,10 @@ const ReserverVoiture = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('/voitures')
+    instance.get('/voitures')
       .then(res => {
         console.log('voitures:', res.data); // pour voir la structure
-        // ✅ adapte ici selon ta structure API
+  
         const cars = res.data?.data ?? res.data;
         setVoitures(Array.isArray(cars) ? cars : []);
         setLoading(false);
@@ -70,7 +70,7 @@ const handleSubmit = async (e) => {
   setSubmitting(true);
 
   try {
-await axios.post('/user/reservations/my', {
+await instance.post('/user/reservations/my', {
   idVoiture: formData.voiture_id,
   dateDebut: formData.dateDebut,
   dateFin: formData.dateFin,
@@ -230,7 +230,7 @@ await axios.post('/user/reservations/my', {
                 <div className="bg-gray-100 h-48 rounded-lg flex items-center justify-center">
                   {selectedCar.car_photo ? (
                     <img
-  src={`http://127.0.0.1:8000/storage/Vehicule/${selectedCar.car_photo}`}
+  src={`${selectedCar.car_photo}`}
   alt={selectedCar.car_name}
   className="max-h-full object-contain"
 />

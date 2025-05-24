@@ -23,7 +23,8 @@ class VoitureController extends Controller
             'car_categorie',
             'price',
             'statut',
-            'car_photo'
+            'car_photo',
+            'place',
         );
         if ($category) {
             $query->where('car_categorie', $category);
@@ -54,7 +55,7 @@ class VoitureController extends Controller
      */
     public function show(string $id)
     {
-        $voiture = Voiture::select('id', 'car_name', 'car_model', 'car_categorie', 'immatriculation', 'statut', 'car_photo')
+        $voiture = Voiture::select('id', 'car_name', 'car_model', 'car_categorie', 'place', 'immatriculation', 'statut', 'car_photo')
             ->findOrFail($id);
 
         return response()->json([

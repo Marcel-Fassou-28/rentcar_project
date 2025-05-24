@@ -71,12 +71,4 @@ class Reservation extends Model
     {
         return $this->belongsTo(Voiture::class, 'idVoiture', 'id');
     }
-
-    /**
-     * Relation avec la table paiements (One-to-Many)
-     */
-    public function paiements()
-    {
-        return $this->hasMany(Paiement::class, 'idReservation', 'id');
-    }
 }

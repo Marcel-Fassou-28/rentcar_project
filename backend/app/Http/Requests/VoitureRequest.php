@@ -31,6 +31,7 @@ class VoitureRequest extends FormRequest
             'car_model' => ['required', 'string', 'max:100'],
             'car_categorie' => ['required', 'string', 'in:SUV,berline,citadine,luxe,compact,4x4'],
             'price' => ['required', 'numeric', 'min:0'],
+            'place' => ['required', 'numeric'],
             'moteur' => ['nullable', 'string', 'max:50'],
             'transmission' => ['nullable', 'string', 'max:50'],
             'immatriculation' => ['required', 'string', 'max:100', 'unique:voitures,immatriculation,' . $id],
@@ -63,6 +64,7 @@ class VoitureRequest extends FormRequest
             'statut.in' => 'Le statut doit être l’un des suivants : réservé, disponible, loué.',
             'car_photo.string' => 'La photo de la voiture doit être une chaîne de caractères.',
             'car_photo.max' => 'La photo de la voiture ne peut pas dépasser :max caractères.',
+            'place.required' => 'Le nombre de place est requis'
         ];
     }
 

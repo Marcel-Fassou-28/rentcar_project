@@ -51,10 +51,4 @@ class Client extends Model
         return $this->hasMany(Reservation::class, 'idClient', 'id');
     }
 
-    /**
-     * Relation avec la table notes (One-to-One)
-     */
-    public function notes() {
-        return $this->hasOne(Note::class, 'idClient', 'id');
-    }
 }

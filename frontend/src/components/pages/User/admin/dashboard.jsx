@@ -177,7 +177,7 @@ const recentReservation = safeReservations.slice(0, 5).map(reservation => {
 
 
   return (
-    <div className="pt-16  bg-gradient-to-b from-gray-50 to-gray-100 flex">
+    <div className="pt-16  bg-gradient-to-b from-gray-50 to-gray-100 flex ">
       <Sidebar  />
       <div className=" w-full flex flex-col">
         <div className=" bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6  text-white mx-auto my-4 w-[95%]  ">

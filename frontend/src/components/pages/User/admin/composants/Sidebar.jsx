@@ -51,23 +51,6 @@ const menuItems = [
 
   return (
     <>
-      {/* Bouton mobile pour ouvrir la sidebar */}
-      <div className="md:hidden fixed bottom-4 right-4 z-10">
-        <button 
-          onClick={toggleMobileSidebar} 
-          className="bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition-all duration-300"
-        >
-          {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Overlay pour mobile */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-10 md:hidden"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
 
       {/* Sidebar */}
       <motion.aside 
@@ -77,7 +60,7 @@ const menuItems = [
           opacity: 1,
           width: isCollapsed ? '80px' : '280px'
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.3  }}
         className={`
           fixed top-16 left-0 z-10 h-[calc(100vh-4rem)] bg-white shadow-lg
           transform transition-all duration-300 ease-in-out
@@ -179,10 +162,9 @@ const menuItems = [
               )}
             </Link>
 
-            {/* Bouton pour réduire/agrandir la sidebar (visible uniquement sur desktop) */}
             <button 
               onClick={toggleSidebar}
-              className="hidden md:flex items-center justify-center mt-4 w-full px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-all duration-200"
+              className="flex items-center w-full px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-all duration-200 "
             >
               <ChevronRight 
                 size={20} 

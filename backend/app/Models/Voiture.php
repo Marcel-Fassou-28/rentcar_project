@@ -45,6 +45,7 @@ class Voiture extends Model
         'car_categorie' => 'string',
         'statut' => 'string', // ENUM('reservé', 'disponible', 'loué')
         'moteur' => 'string',
+        'place' => 'int',
     ];
 
     protected $fillable = [
@@ -57,6 +58,7 @@ class Voiture extends Model
         'moteur',
         'transmission',
         'car_photo',
+        'place'
     ];
 
     /**

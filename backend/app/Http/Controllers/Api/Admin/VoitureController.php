@@ -26,7 +26,8 @@ class VoitureController extends Controller
             'car_model',
             'car_categorie',
             'statut',
-            'car_photo'
+            'car_photo',
+            'place',
         );
         if ($category) {
             $query->where('car_categorie', $category);
@@ -65,7 +66,8 @@ class VoitureController extends Controller
             'car_model', 
             'car_categorie', 
             'statut', 
-            'car_photo'
+            'car_photo',
+            'place',
         )
         ->where('statut', 'disponible')
             ->get();
@@ -124,6 +126,7 @@ class VoitureController extends Controller
                 'immatriculation' => $validated['immatriculation'],
                 'car_model' => $validated['car_model'],
                 'car_categorie' => $validated['car_categorie'],
+                'place' => $validated['place'],
                 'price' => $validated['price'],
                 'statut' => 'disponible',
                 'transmission' => $validated['transmission'],
@@ -189,6 +192,7 @@ class VoitureController extends Controller
             'immatriculation' => $validated['immatriculation'],
             'car_model' => $validated['car_model'],
             'car_categorie' => $validated['car_categorie'],
+            'place' => $validated['place'],
             'price' => $validated['price'],
             'statut' => 'disponible',
             'transmission' => $validated['transmission'],
@@ -246,7 +250,7 @@ class VoitureController extends Controller
     public function show(string $id)
     {
         $voiture = Voiture::select('id', 'car_name', 'car_model', 'car_categorie', 'immatriculation', 
-            'statut', 'transmission', 'moteur', 'price', 'car_photo')
+            'statut', 'transmission', 'moteur', 'price', 'car_photo', 'place')
             ->find($id);
         
         if ($voiture) {

@@ -147,11 +147,11 @@ const handleSearch = (e) => {
             <div className=" overflow-x-auto">
               <form action="" onSubmit={handleSearch}  className="flex items-center gap-4 px-4 py-4">
                 <div className="flex flex-[1] flex-col gap-2 p-2">
-                <label htmlFor="">Statut</label>
+                
                 <select name="status" id="" 
                 onChange={handleChange}
-                className="border rounded-full p-2 py-1 px-4 focus:outline-none transition-all duration-300 focus:border-gray-500">
-                  <option value="all" className="">Toutes</option>
+                className="border rounded-full p-2 py-2 px-4 focus:outline-none transition-all duration-300 focus:border-gray-500 font-semibold">
+                  <option value="all" className="">Statuts de Réservations</option>
                   <option value="en cours">En cours</option>
                   <option value="payé">Payées</option>
                   <option value="en attente">En attente</option>

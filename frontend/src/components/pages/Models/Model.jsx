@@ -2,9 +2,17 @@ import EvStationIcon from '@mui/icons-material/EvStation';
 import SpeedIcon from '@mui/icons-material/Speed';// Replaced MUI icons for consistency
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../AuthContext';
+import { Car, Clock, Key, VoteIcon } from 'lucide-react';
+import { div } from 'framer-motion/client';
 
 const Model = ({ voiture }) => {
   const { user } = useAuth();
+
+  const statusIcons = {
+    disponible: <Car className="text-green-500" />,
+    reservé: <Clock className="text-yellow-500" />,
+    loué: <Key className="text-blue-500" />,
+  };
 
   const isAdmin = user?.role === 'admin';
   const linkProps = isAdmin
@@ -32,13 +40,20 @@ const Model = ({ voiture }) => {
           <span>jour</span>
         </div>
       </div>
-      <h1 className="font-semibold text-xl uppercase mt-4 mb-2 text-gray-900">{voiture.car_name}</h1>
+      <div className='flex justify-between items-center'>
+        <h1 className="font-semibold text-xl uppercase mt-4 mb-2 text-gray-900">{voiture.car_name}</h1> 
+        <span className='text-sm font-semibold uppercase mt-4 mb-2 text-gray-700'>Place : {(voiture.place)}</span>
+      </div>
       <hr className="border-gray-200" />
       <div className="flex justify-between mt-3 text-gray-600">
         <span className="flex items-center gap-2">
           <EvStationIcon size={20} />
           {voiture.moteur || 'N/A'}
         </span>
+        <span className="flex items-center gap-2">
+  {statusIcons[voiture.statut]}
+  <span className="capitalize">{voiture.statut}</span>
+</span>
         <span className="flex items-center gap-2 hover:text-orange-600 cursor-pointer">
           <SpeedIcon size={20} />
           {voiture.transmission || 'N/A'}

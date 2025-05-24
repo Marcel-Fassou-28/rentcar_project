@@ -2,11 +2,12 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../Sidebar";
 import instance from "../../../../../config/Axios";
-import { Car, CarFront, Euro, Fuel, Hash, Layers, Settings, Sparkle, Tag, User } from "lucide-react";
+import { Car, CarFront, Euro, Fuel, Hash, Layers, Settings, Sparkle, Tag, User, User2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 // Options pour les champs select
 const FORM_OPTIONS = {
+  place: ["2", "4", "6", "5"],
   models: ["Série 3", "X5", "Classe C", "A4", "RAV4", "Civic"],
   categories: ["berline", "suv", "compact", "luxe", "citadine", "4x4"],
   moteurs: ["essence", "diesel", "hybride", "électrique"],
@@ -18,7 +19,7 @@ const formatOption = (value) =>
 
 
 const ModifierCar = () => {
-  const [formData, setFormData] = useState({immatriculation: "", car_name: "", car_model: "", car_categorie: "", price: "", transmission: "", moteur: "", car_photo: null});
+  const [formData, setFormData] = useState({immatriculation: "", car_name: "", car_model: "", car_categorie: "",place: "", price: "", transmission: "", moteur: "", car_photo: null});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -36,6 +37,7 @@ const ModifierCar = () => {
           car_name: data.car_name || '',
           car_model: data.car_model || '',
           car_categorie: data.car_categorie || '',
+          place: data.place || '',
           price: data.price || '',
           transmission: data.transmission || '',
           moteur: data.moteur || '',
@@ -72,7 +74,7 @@ const ModifierCar = () => {
     setSuccess(null);
     setLoading(true);
 
-    const requiredFields = ["car_name","immatriculation","car_model","car_categorie","price","transmission","moteur"];
+    const requiredFields = ["car_name","immatriculation","car_model","car_categorie","price", "place", "transmission","moteur"];
     if (requiredFields.some((field) => !formData[field])) {
       setError("Tous les champs requis doivent être remplis.");
       setLoading(false);
@@ -117,7 +119,7 @@ return (
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold mb-2">Bienvenue</h1>
-              <p className="text-orange-100">Ajoutez des voitures pour une clientèle accrue</p>
+              <p className="text-orange-100">Modifier des voitures pour une clientèle accrue</p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center">
               <div className="bg-white text-orange-600 p-2 rounded-full">
@@ -140,7 +142,7 @@ return (
           onSubmit={handleSubmit}
           className="max-w-xl rounded-xl bg-white p-4 shadow-lg w-[48%]"
         >
-          <h2 className="mb-4 font-semibold text-gray-900 text-xl  uppercase text-center">Ajouter une voiture</h2>
+          <h2 className="mb-4 font-semibold text-gray-900 text-xl  uppercase text-center">Modifier une voiture</h2>
           
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Champ Nom de la voiture */}
@@ -175,6 +177,28 @@ return (
                 className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
                 required
               />
+            </div>
+
+            {/* Champ PLace */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="place" className="text-sm font-medium text-gray-700">
+                Nombre de place <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="place"
+                name="place"
+                value={formData.place}
+                onChange={handleInputChange}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 transition"
+                required
+              >
+                <option value="">Sélectionner le nombre de place</option>
+                {FORM_OPTIONS.place.map((place) => (
+                  <option key={place} value={place}>
+                    {place}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Champ Modèle */}
@@ -377,6 +401,16 @@ return (
                 <p className="text-sm font-medium text-gray-600">Nom</p>
                 <p className="text-base font-semibold text-gray-900">
                   {formData.car_name || "Non spécifié"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition hover:bg-gray-100">
+              <User2 className="h-6 w-6 text-orange-500" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">PLace</p>
+                <p className="text-base font-semibold text-gray-900">
+                  {formData.place || "Non spécifié"}
                 </p>
               </div>
             </div>

@@ -58,22 +58,3 @@ CREATE TABLE IF NOT EXISTS reservations (
     CONSTRAINT fk_reservation_client FOREIGN KEY (idClient) REFERENCES clients(id) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT fk_reservation_voiture FOREIGN KEY (idVoiture) REFERENCES voitures(id) ON DELETE SET NULL ON UPDATE CASCADE
 );
-
-CREATE TABLE IF NOT EXISTS paiements (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    datePaiement DATETIME DEFAULT CURRENT_TIMESTAMP,
-    montant DOUBLE(10, 2) NOT NULL,
-    methode_paiement ENUM('carte') DEFAULT 'carte',
-    idReservation BIGINT UNSIGNED NOT NULL,
-    CONSTRAINT fk_paiement_client FOREIGN KEY (idReservation) REFERENCES reservations(id) ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS notes (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    note DOUBLE(2, 1) NOT NULL,
-    commentaire TEXT NOT NULL,
-    idClient BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_notes_client FOREIGN KEY (idClient) REFERENCES clients(id) ON DELETE CASCADE
-);

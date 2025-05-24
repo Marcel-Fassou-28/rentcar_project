@@ -226,19 +226,17 @@ const Voiture = () => {
           </Paper>
           {values.length > 0 && (
             <div className="flex gap-4 justify-center">
-              <a href={`voitures/delete/${values[0]}`} className="m-4 bg-red-500 p-2 rounded-md">
+              <Link to={`voitures/delete/${values[0]}`} className="m-4 bg-red-600 font-semibold p-2 rounded-md text-white">
                 Supprimer
-              </a>
+              </Link>
 
               {values.length < 2 && (
-                <a
-                  href={`voitures/modifyCar/${values[0]}`}
-                  className="m-4 bg-blue-500 p-2 rounded-md"
+                <Link
+                  to={`voitures/modifyCar/${values[0]}`}
+                  className="m-4 bg-orange-500 p-2 rounded-md font-semibold text-white"
                 >
-                  {" "}
-                 
                   Modifier
-                </a>
+                </Link>
               )}
             </div>
           )}
