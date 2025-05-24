@@ -236,10 +236,8 @@ class UserController extends Controller
      */
     public function update(UpdateProfileRequest $request, string $id)
     {
-        dd("yes");
         $validated = $request->validated();
         $utilisateur = Utilisateur::where('id', $id)->first();
-        dd($utilisateur);
         if ($request->has('photo') && $request->photo['name'] && $request->photo['data']) {
                 $photoData = $request->photo['data'];
                 if (!preg_match('/^data:image\/(jpeg|png|jpg);base64,(.+)$/', $photoData, $matches)) {

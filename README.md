@@ -36,7 +36,8 @@ se connecter.
 ### 👤 Côté client :
 Rechercher un véhicule (par type, disponibilité, categorie, etc...)
 
-+ Créer un compte et se connecter
++ Créer un compte et se connecter (avec possiblité de réinitialiser son mot de passe via email, 
+de s'inscrire via son compte google)
 + Consulter les détails du véhicule
 + Réserver un véhicule
 + Gérer ses réservations (modifier, annuler)
@@ -142,7 +143,8 @@ Utilisez les identifiants suivants pour vous connecter en tant qu'administrateur
 - **Email** : `test@contact.com`  
 - **Mot de passe** : `MotDePasseSolide123!`
 
-Vous pourriez inscrire un utilisateur en tant que client
+Vous pourriez inscrire un utilisateur en tant que client, réinitialiser un mot de passe
+via son email, s'inscrire via son email aussi
 
 ## 📸 Aperçu
 
