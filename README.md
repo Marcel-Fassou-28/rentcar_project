@@ -142,6 +142,8 @@ Utilisez les identifiants suivants pour vous connecter en tant qu'administrateur
 - **Email** : `test@contact.com`  
 - **Mot de passe** : `MotDePasseSolide123!`
 
+Vous pourriez inscrire un utilisateur en tant que client
+
 ## 📸 Aperçu
 
 ![Dashboard](ForReadme/dashboard.png)
