@@ -2,10 +2,9 @@ import EvStationIcon from '@mui/icons-material/EvStation';
 import SpeedIcon from '@mui/icons-material/Speed';// Replaced MUI icons for consistency
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../AuthContext';
-import { Car, Clock, Key, VoteIcon } from 'lucide-react';
-import { div } from 'framer-motion/client';
+import { Car, Clock, Key} from 'lucide-react';
 
-const Model = ({ voiture }) => {
+const Model = ({ voiture}) => {
   const { user } = useAuth();
 
   const statusIcons = {
@@ -14,10 +13,10 @@ const Model = ({ voiture }) => {
     loué: <Key className="text-blue-500" />,
   };
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user ? user?.role === 'admin' : false;
   const linkProps = isAdmin
-    ? { to: `/${user.role}/voitures/modifyCar/${voiture.id}`, label: 'Modifier' }
-    : { to: `/${user.role}/reserver`, label: 'Réserver' };
+    ? { to: `/admin/voitures/modifyCar/${voiture.id}`, label: 'Modifier' }
+    : { to: `/client/reserver/${voiture.id}`, label: 'Réserver' };
 
   return (
     <div className="w-full max-w-[300px] rounded-xl bg-white shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow mx-auto">
@@ -28,11 +27,11 @@ const Model = ({ voiture }) => {
           className="w-full h-48 md:h-40 lg:h-48 object-cover scale-90 rounded-lg hover:transform hover:scale-100 transition duration-300"
         />
         <Link
-          to={linkProps.to}
+          to={user ? linkProps.to : `/client/reserver/${voiture.id}`}
           className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
-          aria-label={linkProps.label}
+          aria-label={user ? linkProps.label : 'Réserver'}
         >
-          {linkProps.label}
+          {user ? linkProps.label : 'Réserver'}
         </Link>
         <div className="absolute bottom-0 right-0 hover:scale-105 cursor-pointer transition duration-200 hover:bg-orange-600 bg-orange-500 text-white rounded-tl-[30px] px-4 py-2 flex items-center gap-2">
           <span className="font-semibold">À partir de {voiture.price} DHS</span>

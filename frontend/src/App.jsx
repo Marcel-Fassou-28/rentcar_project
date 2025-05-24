@@ -63,7 +63,7 @@ function App() {
 
         {/* Routes client sécurisées */}
         <Route path='/client/reservation' element={<ProtectedRoute allowedRoles={'client'}><MesReservations /></ProtectedRoute>} />
-        <Route path='/client/reserver' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
+        <Route path='/client/reserver/:id' element={<ProtectedRoute allowedRoles={'client'}><ReserverVoiture /></ProtectedRoute>} />
         <Route path='/client/settings/:id' element={<ProtectedRoute allowedRoles={'client'}><Setting /></ProtectedRoute>} />
 
         {/* Routes communes */}

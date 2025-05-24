@@ -5,10 +5,11 @@ import instance from "../../config/Axios";
 import { CarFront } from "lucide-react";
 import { Car, Jeep, CarSimple } from "@phosphor-icons/react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAuth, slugify } from "../../AuthContext";
 
 
 const Interface = () => {
-
+  const {user} = useAuth();
   const [voitures, setVoitures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,7 +32,6 @@ const Interface = () => {
       try {
         const response = await instance.get(`/voitures${category ? `?category=${category}` : ""}`);
         //const response = await instance.get("/voiture/disponible");
-console.log(response);
         setVoitures(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -88,8 +88,8 @@ console.log(response);
             NOS VEHICULES
           </h1>
           <div className="flex gap-4">
-            <a href="/">Accueil</a>
-            <a href="/models">/ Voitures</a>
+            <Link to={user ? `/${user.role}/dashboard/${user.id}/${encodeURIComponent(`${slugify(user.nom)}-${slugify(user.prenom)}`)}` : "/"}>Accueil</Link>
+            <Link to={ user ? `/${user.role}/models` : "/models"}>/ Voitures</Link>
           </div>
         </div>
         
@@ -112,7 +112,7 @@ console.log(response);
 
           <div className="pb-12 mx-4 mt-10  lg:mx-24   md:gap-1 lg:gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {voitures.map((voiture) => {
-              return <Model voiture={voiture} key={voiture.nom} />;
+              return <Model voiture={voiture} key={voiture.id} />;
             })}
           </div>
         </div>
